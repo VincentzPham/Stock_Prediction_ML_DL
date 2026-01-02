@@ -84,6 +84,12 @@ def parse_args():
         action='store_true',
         help='Skip models that fail and continue with others'
     )
+    
+    parser.add_argument(
+        '-y', '--yes',
+        action='store_true',
+        help='Skip confirmation prompt (for CI/CD)'
+    )
 
     parser.add_argument(
         '--no-update-data',
@@ -202,7 +208,7 @@ def main():
     print("=" * 60)
     
     # Confirm
-    if len(tickers) * len(models) > 5:
+    if len(tickers) * len(models) > 5 and not args.yes:
         response = input("\nProceed? [y/N]: ")
         if response.lower() != 'y':
             print("Aborted.")

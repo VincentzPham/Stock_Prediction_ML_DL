@@ -32,8 +32,8 @@ jobs:
     - name: Run Quick Test (ML/TS only)
       # Skip DL models in CI to save time/resources and avoid TF issues
       run: |
-        uv run python scripts/train_all.py --ml-only --no-save
-        uv run python scripts/train_all.py --ts-only --no-save
+        uv run python scripts/train_all.py --ml-only --no-save -y
+        uv run python scripts/train_all.py --ts-only --no-save -y
 
     - name: Build Docker image
       run: |
