@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # ==============================================================================
+  # FastAPI Backend
+  # ==============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Data:/app/Data:ro
+      - ./Models:/app/Models:ro
+      - ./Result:/app/Result
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - stock-network
+
+  # ==============================================================================
+  # Streamlit Frontend
+  # ==============================================================================
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    container_name: stock-ui
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - stock-network
+
+networks:
+  stock-network:
+    driver: bridge
+
+volumes:
+  model-data:
+  result-data:

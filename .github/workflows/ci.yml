@@ -29,12 +29,20 @@ jobs:
       run: |
         uv sync
 
-    - name: Run Quick Test (ML/TS only)
-      # Skip DL models in CI to save time/resources and avoid TF issues
+    - name: Run Quick Test (ML only - fast)
+      # Only run ML models in CI to save time/resources
+      # DL models require GPU and too much time
+      # TS models (ARIMA/Prophet) can be slow
       run: |
-        uv run python scripts/train_all.py --ml-only --no-save -y
-        uv run python scripts/train_all.py --ts-only --no-save -y
+        uv run python scripts/train_all.py --ml-only --no-save --no-update-data -y
 
-    - name: Build Docker image
+    - name: Build Docker images
       run: |
-        docker build -t stock-prediction-api .
+        docker compose build
+
+    - name: Test Docker Compose
+      run: |
+        docker compose up -d
+        sleep 10
+        curl -f http://localhost:8000/ || exit 1
+        docker compose down

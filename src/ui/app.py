@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import os
 import sys
 from pathlib import Path
 
@@ -8,8 +9,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from config import TICKERS, MODEL_NAMES
 
-# API URL
-API_URL = "http://localhost:8000"
+# API URL - support Docker environment variable
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 st.set_page_config(
     page_title="Stock Prediction App",

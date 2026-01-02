@@ -34,11 +34,14 @@ venv.bak/
 # VS Code
 .vscode/
 
-# Large Data & Models
-Models/
-# Result/
-# *.csv
-# *.pkl
-# *.keras
-# *.h5
-# *.pth
+# Large Data & Models (root level only)
+/Data/
+/Models/
+/Result/
+*.pkl
+*.keras
+*.h5
+*.pth
+
+# Keep sample CSV for testing
+!Data/.gitkeep
