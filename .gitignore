@@ -35,11 +35,10 @@ venv.bak/
 .vscode/
 
 # Large Data & Models
-Data/
 Models/
-Result/
-*.csv
-*.pkl
-*.keras
-*.h5
-*.pth
+# Result/
+# *.csv
+# *.pkl
+# *.keras
+# *.h5
+# *.pth
