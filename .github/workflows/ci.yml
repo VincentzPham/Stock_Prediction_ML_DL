@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: Install dependencies
+      run: |
+        uv sync
+
+    - name: Run Quick Test (ML/TS only)
+      # Skip DL models in CI to save time/resources and avoid TF issues
+      run: |
+        uv run python scripts/train_all.py --ml-only --no-save
+        uv run python scripts/train_all.py --ts-only --no-save
+
+    - name: Build Docker image
+      run: |
+        docker build -t stock-prediction-api .
