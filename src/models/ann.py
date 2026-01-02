@@ -1,0 +1,133 @@
+"""
+ANN Model
+Artificial Neural Network (MLP) for stock prediction.
+"""
+
+import numpy as np
+from typing import Dict, Any, Optional
+from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).parent.parent))
+from config import DL_CONFIG, TIME_STEP
+
+from .base import BaseModel
+
+
+class ANNModel(BaseModel):
+    """
+    ANN (Multi-Layer Perceptron) model cho stock price prediction.
+    """
+    
+    MODEL_NAME = "ANN"
+    MODEL_TYPE = "deep_learning"
+    
+    def __init__(self, ticker: str):
+        super().__init__(ticker)
+        self.config = DL_CONFIG.get('ANN', {})
+        self.time_step = TIME_STEP
+        
+    def build(
+        self, 
+        input_shape: tuple = None,
+        hidden_layers: list = None,
+        dropout: float = None,
+        **kwargs
+    ) -> None:
+        """
+        Xây dựng ANN model architecture.
+        """
+        from tensorflow.keras.models import Sequential
+        from tensorflow.keras.layers import Dense, Dropout, Flatten
+        
+        if input_shape is None:
+            input_shape = (self.time_step, 1)
+        
+        hidden_layers = hidden_layers or self.config.get('hidden_layers', [64, 32])
+        dropout = dropout or self.config.get('dropout', 0.2)
+        
+        model = Sequential()
+        
+        # Flatten input
+        model.add(Flatten(input_shape=input_shape))
+        
+        # Hidden layers
+        for units in hidden_layers:
+            model.add(Dense(units, activation='relu'))
+            model.add(Dropout(dropout))
+        
+        # Output layer
+        model.add(Dense(1))
+        
+        # Compile
+        model.compile(
+            optimizer=self.config.get('optimizer', 'adam'),
+            loss=self.config.get('loss', 'mean_squared_error')
+        )
+        
+        self.model = model
+        print(f"Built {self.MODEL_NAME} model:")
+        model.summary()
+        
+    def train(
+        self, 
+        X_train: np.ndarray, 
+        y_train: np.ndarray, 
+        X_val: np.ndarray = None, 
+        y_val: np.ndarray = None,
+        epochs: int = None,
+        batch_size: int = None,
+        patience: int = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Train ANN model.
+        """
+        from tensorflow.keras.callbacks import EarlyStopping
+        
+        if self.model is None:
+            self.build(input_shape=(X_train.shape[1], X_train.shape[2]))
+        
+        epochs = epochs or self.config.get('epochs', 50)
+        batch_size = batch_size or self.config.get('batch_size', 32)
+        patience = patience or self.config.get('patience', 10)
+        
+        callbacks = []
+        if patience > 0:
+            early_stopping = EarlyStopping(
+                monitor='val_loss',
+                patience=patience,
+                restore_best_weights=True,
+                verbose=1
+            )
+            callbacks.append(early_stopping)
+        
+        validation_data = None
+        if X_val is not None and y_val is not None:
+            validation_data = (X_val, y_val)
+        
+        print(f"\nTraining {self.MODEL_NAME} for {self.ticker}...")
+        
+        history = self.model.fit(
+            X_train, y_train,
+            epochs=epochs,
+            batch_size=batch_size,
+            validation_data=validation_data,
+            callbacks=callbacks,
+            verbose=1
+        )
+        
+        self.is_trained = True
+        self.history = history.history
+        
+        return self.history
+    
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """
+        Dự đoán giá stock.
+        """
+        if self.model is None:
+            raise ValueError("Model chưa được build/train.")
+        
+        predictions = self.model.predict(X, verbose=0)
+        return predictions
