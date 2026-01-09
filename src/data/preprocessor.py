@@ -242,9 +242,6 @@ class DataPreprocessor:
             y.append(data[i + horizon - 1, 0])
             
         return np.array(X), np.array(y)
-        y_train, y_test = y[:split_idx], y[split_idx:]
-        
-        return X_train, X_test, y_train, y_test
     
     def prepare_timeseries_data(
         self, 
@@ -317,15 +314,6 @@ class DataPreprocessor:
             return self.df.index[:split_idx]
         else:
             return self.df.index[split_idx:]
-    
-    @staticmethod
-    def _create_sequences(data: np.ndarray, time_step: int) -> Tuple[np.ndarray, np.ndarray]:
-        """Tạo sequences cho time series data."""
-        X, y = [], []
-        for i in range(time_step, len(data)):
-            X.append(data[i - time_step:i, 0])
-            y.append(data[i, 0])
-        return np.array(X), np.array(y)
     
     def get_info(self) -> dict:
         """Trả về thông tin về dataset."""

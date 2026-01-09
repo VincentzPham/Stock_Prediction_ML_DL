@@ -102,17 +102,40 @@ def parse_args():
         action='store_true',
         help='Train only ML models (Random Forest, Decision Tree, Linear Regression)'
     )
+
+    # Backward/typo-compatible aliases (hide from --help)
+    parser.add_argument(
+        '--ml--only',
+        dest='ml_only',
+        action='store_true',
+        help=argparse.SUPPRESS
+    )
     
     parser.add_argument(
         '--dl-only',
         action='store_true',
         help='Train only Deep Learning models (LSTM, RNN, etc.)'
     )
+
+    # Common typo: extra dash in flag name
+    parser.add_argument(
+        '--dl--only',
+        dest='dl_only',
+        action='store_true',
+        help=argparse.SUPPRESS
+    )
     
     parser.add_argument(
         '--ts-only',
         action='store_true',
         help='Train only Time Series models (ARIMA, Prophet, etc.)'
+    )
+
+    parser.add_argument(
+        '--ts--only',
+        dest='ts_only',
+        action='store_true',
+        help=argparse.SUPPRESS
     )
     
     parser.add_argument(
