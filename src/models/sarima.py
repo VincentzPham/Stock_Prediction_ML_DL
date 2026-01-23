@@ -162,3 +162,23 @@ class SARIMAModel(BaseModel):
                 print(f"    Completed {i + 1}/{len(test_series)} steps")
         
         return np.array(predictions)
+
+    def predict_next(self, preprocessor, horizon: int = 1) -> float:
+        """
+        Dự đoán giá trị tương lai.
+        """
+        if self.model is None:
+            raise ValueError("Model chưa được load/train.")
+        
+        # Forecast horizon steps ahead
+        forecast = self.model.forecast(steps=horizon)
+        # Return the last prediction (for the horizon-th day)
+        yhat = forecast.iloc[-1] if hasattr(forecast, 'iloc') else forecast[-1]
+        
+        # Inverse log if model was trained with log transform
+        if hasattr(self, 'use_log') and self.use_log:
+            prediction = np.exp(yhat)
+        else:
+            prediction = yhat
+        
+        return float(prediction)

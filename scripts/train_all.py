@@ -156,6 +156,19 @@ def parse_args():
         help='List all available tickers'
     )
     
+    parser.add_argument(
+        '--tune',
+        action='store_true',
+        help='Run hyperparameter tuning using Optuna before training'
+    )
+    
+    parser.add_argument(
+        '--trials',
+        type=int,
+        default=20,
+        help='Number of Optuna trials for tuning (default: 20)'
+    )
+    
     return parser.parse_args()
 
 
@@ -199,17 +212,26 @@ def main():
     
     # Determine models
     if args.model:
-        models = [args.model]
+        models = {args.model}
     elif args.models:
-        models = [m.strip() for m in args.models.split(',')]
-    elif args.ml_only:
-        models = ML_MODELS
-    elif args.dl_only:
-        models = DEEP_LEARNING_MODELS
-    elif args.ts_only:
-        models = TIME_SERIES_MODELS
+        models = set(m.strip() for m in args.models.split(','))
     else:
-        models = list(MODEL_REGISTRY.keys())
+        models = set()
+    
+    # Add models based on flags
+    if args.ml_only:
+        models.update(ML_MODELS)
+    if args.dl_only:
+        models.update(DEEP_LEARNING_MODELS)
+    if args.ts_only:
+        models.update(TIME_SERIES_MODELS)
+    
+    # If no models selected yet, include all (default behavior)
+    if not models and not (args.ml_only or args.dl_only or args.ts_only):
+        models = set(MODEL_REGISTRY.keys())
+    
+    # Convert back to sorted list
+    models = sorted(list(models))
     
     # Validate models
     for m in models:
@@ -248,40 +270,42 @@ def main():
     
     trainer = ModelTrainer(verbose=True)
     
+    # Common arguments
+    train_kwargs = {
+        'save_model': not args.no_save,
+        'save_results': not args.no_save,
+        'tune': args.tune,
+        'n_trials': args.trials,
+        'skip_on_error': args.skip_errors
+    }
+    
     if len(tickers) == 1 and len(models) == 1:
         # Single training
         result = trainer.train_single(
             ticker=tickers[0],
             model_name=models[0],
-            save_model=not args.no_save,
-            save_results=not args.no_save
+            **train_kwargs
         )
     elif len(tickers) == 1:
         # All models for one ticker
         results = trainer.train_all_models(
             ticker=tickers[0],
             models=models,
-            skip_on_error=args.skip_errors,
-            save_model=not args.no_save,
-            save_results=not args.no_save
+            **train_kwargs
         )
     elif len(models) == 1:
         # One model for all tickers
         results = trainer.train_all_tickers(
             model_name=models[0],
             tickers=tickers,
-            skip_on_error=args.skip_errors,
-            save_model=not args.no_save,
-            save_results=not args.no_save
+            **train_kwargs
         )
     else:
         # All combinations
         results = trainer.train_all(
             tickers=tickers,
             models=models,
-            skip_on_error=args.skip_errors,
-            save_model=not args.no_save,
-            save_results=not args.no_save
+            **train_kwargs
         )
     
     # Summary

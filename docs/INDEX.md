@@ -10,7 +10,9 @@ Hệ thống bao gồm Training Pipeline, FastAPI Backend, và Streamlit UI.
 - **ML/DL**: TensorFlow, scikit-learn, statsmodels, Prophet
 - **Backend**: FastAPI, Uvicorn
 - **Frontend**: Streamlit
-- **DevOps**: Docker, GitHub Actions
+- **DevOps**: Docker, GitHub Actions (CI/CD)
+- **MLOps**: DVC (Data Version Control), MLflow (Experiment Tracking)
+- **Auto-ML**: Optuna (Bayesian Optimization)
 
 ## Cấu Trúc Thư Mục
 
@@ -18,54 +20,66 @@ Hệ thống bao gồm Training Pipeline, FastAPI Backend, và Streamlit UI.
 Stock/
 ├── src/                         # Source code chính
 │   ├── api/                     # FastAPI Backend
-│   │   └── app.py
 │   ├── ui/                      # Streamlit Frontend
-│   │   └── app.py
-│   ├── config.py                # Cấu hình
 │   ├── data/                    # Data processing
 │   ├── models/                  # Model definitions
-│   └── training/                # Training logic
+│   └── training/                # Training logic (with MLflow & Optuna)
 │
 ├── scripts/                     # Scripts
-│   ├── train_all.py             # Training CLI
-│   ├── fix_names.py             # Utility scripts
-│   └── test_quick.py
+│   └── train_all.py             # Training CLI
 │
-├── Data/                        # CSV Data
-├── Models/                      # Trained Models
+├── Data/                        # CSV Data (Tracked by DVC)
+├── Models/                      # Trained Models (Tracked by DVC)
 ├── Result/                      # Evaluation Results
 ├── docs/                        # Documentation
+├── .github/                     # CI/CD Workflows
+├── .dvc/                        # DVC Config
 ├── Dockerfile                   # Docker config
 └── pyproject.toml               # Dependencies
 ```
 
 ## Danh Sách Models (12 models)
 
-| Model                       | Type              | Library      |
-|-----------------------------|-------------------|--------------|
-| LSTM, BiLSTM, LSTM-GRU      | Deep Learning     | tensorflow   |
-| RNN, ANN                    | Deep Learning     | tensorflow   |
-| ARIMA, SARIMA               | Time Series       | statsmodels  |
-| Prophet                     | Time Series       | prophet      |
-| Exponential Smoothing       | Time Series       | statsmodels  |
-| Random Forest               | ML                | scikit-learn |
-| Decision Tree               | ML                | scikit-learn |
-| Multiple Linear Regression  | ML                | scikit-learn |
+| Model                       | Type              | Library      | Support Tuning |
+|-----------------------------|-------------------|--------------|:--------------:|
+| LSTM, BiLSTM, LSTM-GRU      | Deep Learning     | tensorflow   |       ✅       |
+| RNN, ANN                    | Deep Learning     | tensorflow   |       ✅       |
+| ARIMA, SARIMA               | Time Series       | statsmodels  |       ❌       |
+| Prophet                     | Time Series       | prophet      |       ❌       |
+| Exponential Smoothing       | Time Series       | statsmodels  |       ❌       |
+| Random Forest               | ML                | scikit-learn |       ✅       |
+| Decision Tree               | ML                | scikit-learn |       ✅       |
+| Multiple Linear Regression  | ML                | scikit-learn |       ❌       |
 
 ## Commands
 
 ### Setup
 ```bash
 uv sync
+uv run dvc pull  # Pull data/models from remote if configured
 ```
 
-### Training
+### Hyperparameter Tuning (NEW)
 ```bash
+# Tune và Train model với Optuna (20 trials)
+uv run python scripts/train_all.py -t AAPL -m LSTM --tune --trials 20
+
+# Tune nhanh (5 trials)
+uv run python scripts/train_all.py -t AAPL -m "Random Forest" --tune --trials 5
+```
+
+### Training (Standard)
+```bash
+# Train ML và DL models cho AAPL và MSFT
+uv run python scripts/train_all.py --ml-only --dl-only --tickers AAPL,MSFT
+
 # Train tất cả (ML only để nhanh)
 uv run python scripts/train_all.py --ml-only
+```
 
-# Train cụ thể
-uv run python scripts/train_all.py -t AAPL -m "Random Forest"
+### MLflow UI
+```bash
+uv run mlflow ui
 ```
 
 ### Run App

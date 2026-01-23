@@ -137,3 +137,29 @@ class RNNModel(BaseModel):
         
         predictions = self.model.predict(X, verbose=0)
         return predictions
+
+    def predict_next(self, preprocessor, horizon: int = 1) -> float:
+        """
+        Dự đoán giá trị tương lai.
+        """
+        from config import TARGET_COLUMN
+        
+        if self.model is None:
+            raise ValueError("Model chưa được load/train.")
+            
+        # Prepare scaler and data
+        _, _, _, _, scaler = preprocessor.prepare_lstm_data(time_step=self.time_step, horizon=horizon)
+        
+        # Get the last sequence of data
+        data = preprocessor.df[TARGET_COLUMN].values.reshape(-1, 1)
+        scaled_data = scaler.transform(data)
+        
+        # Input shape: (1, time_step, 1)
+        last_sequence = scaled_data[-self.time_step:]
+        X_input = last_sequence.reshape(1, self.time_step, 1)
+        
+        # Predict
+        pred_scaled = self.model.predict(X_input, verbose=0)
+        prediction = scaler.inverse_transform(pred_scaled)[0][0]
+        
+        return float(prediction)

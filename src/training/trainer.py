@@ -16,7 +16,8 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from config import (
     TICKERS, MODEL_NAMES, RESULTS_DIR, MODELS_DIR,
-    TIME_STEP, TRAIN_TEST_SPLIT, TARGET_COLUMN
+    TIME_STEP, TRAIN_TEST_SPLIT, TARGET_COLUMN,
+    DEEP_LEARNING_MODELS, TIME_SERIES_MODELS, ML_MODELS
 )
 from data.preprocessor import DataPreprocessor
 from models import (
@@ -43,10 +44,7 @@ MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
     'Multiple Linear Regression': LinearRegressionModel
 }
 
-# Model types
-DEEP_LEARNING_MODELS = ['LSTM', 'BiLSTM', 'LSTM-GRU', 'RNN', 'ANN']
-TIME_SERIES_MODELS = ['ARIMA', 'SARIMA', 'Prophet', 'Exponential Smoothing']
-ML_MODELS = ['Random Forest', 'Decision Tree', 'Multiple Linear Regression']
+# Model types imported from config
 
 
 class ModelTrainer:
@@ -64,19 +62,15 @@ class ModelTrainer:
         model_name: str,
         save_model: bool = True,
         save_results: bool = True,
+        tune: bool = False,
+        n_trials: int = 20,
         **kwargs
     ) -> Dict[str, Any]:
         """
         Train một model cho một ticker.
-        
         Args:
-            ticker: Mã chứng khoán
-            model_name: Tên model
-            save_model: Có lưu model không
-            save_results: Có lưu kết quả không
-            
-        Returns:
-            Dict chứa kết quả training và metrics.
+            tune: Có chạy tuning không.
+            n_trials: Số lần trial tuning.
         """
         if model_name not in MODEL_REGISTRY:
             raise ValueError(f"Unknown model: {model_name}. Available: {list(MODEL_REGISTRY.keys())}")
@@ -99,48 +93,107 @@ class ModelTrainer:
             preprocessor.load_data()
             preprocessor.add_features()
             
-            # Get model class
-            ModelClass = MODEL_REGISTRY[model_name]
-            model = ModelClass(ticker)
-            
-            # Train based on model type
-            if model_name in DEEP_LEARNING_MODELS:
-                result = self._train_deep_learning(model, preprocessor, **kwargs)
-            elif model_name in TIME_SERIES_MODELS:
-                result = self._train_time_series(model, preprocessor, model_name, **kwargs)
-            elif model_name in ML_MODELS:
-                result = self._train_ml(model, preprocessor, **kwargs)
-            
-            result['status'] = 'success'
-            
-            # Save model
-            if save_model:
-                model.save_model()
-            
-            # Save results
-            if save_results and 'predictions' in result:
-                dates = preprocessor.get_dates('test')
-                model.save_results(
-                    dates=dates,
-                    actuals=result['actuals'],
-                    predictions=result['predictions']
-                )
-                model.save_metrics()
+            # Setup MLflow
+            try:
+                import mlflow
+                mlflow_available = True
+            except ImportError:
+                mlflow_available = False
                 
-                # Plot
-                model.plot_predictions(
-                    dates=dates,
-                    actuals=result['actuals'],
-                    predictions=result['predictions']
-                )
+            # Tuning Logic
+            best_params = {}
+            if tune:
+                from training.tuner import HyperparameterTuner
+                print(f"Starting tuning for {model_name}...")
+                tuner = HyperparameterTuner(ticker, n_trials=n_trials)
+                best_params = tuner.optimize(model_name, preprocessor, MODEL_REGISTRY)
+                if best_params:
+                    print(f"Applying best params: {best_params}")
             
-            print(f"\n✓ {model_name} for {ticker} completed successfully!")
-            print(f"  Metrics: {result['metrics']}")
+            if mlflow_available:
+                experiment_name = f"Stock_Prediction_{ticker}"
+                try:
+                    mlflow.set_experiment(experiment_name)
+                except:
+                    pass
+            
+            # Start MLflow run
+            run_name_suffix = "_tuned" if tune and best_params else ""
+            if mlflow_available:
+                active_run = mlflow.start_run(run_name=f"{model_name}{run_name_suffix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+            else:
+                active_run = None
+            
+            try:
+                # Get model class
+                ModelClass = MODEL_REGISTRY[model_name]
+                model = ModelClass(ticker)
+                
+                # Apply tuned params
+                if best_params and hasattr(model, 'config'):
+                    model.config.update(best_params)
+                
+                # Log params
+                if mlflow_available and active_run:
+                    mlflow.log_param("model_name", model_name)
+                    mlflow.log_param("ticker", ticker)
+                    mlflow.log_param("tuned", tune)
+                    if best_params:
+                        mlflow.log_params(best_params)
+                    elif hasattr(model, 'config'):
+                        mlflow.log_params(model.config)
+                
+                # Train based on model type
+                if model_name in DEEP_LEARNING_MODELS:
+                    result = self._train_deep_learning(model, preprocessor, **kwargs)
+                elif model_name in TIME_SERIES_MODELS:
+                    result = self._train_time_series(model, preprocessor, model_name, **kwargs)
+                elif model_name in ML_MODELS:
+                    result = self._train_ml(model, preprocessor, **kwargs)
+                
+                result['status'] = 'success'
+                
+                # Save model
+                if save_model:
+                    model.save_model()
+                
+                # Save results
+                if save_results and 'predictions' in result:
+                    dates = preprocessor.get_dates('test')
+                    model.save_results(
+                        dates=dates,
+                        actuals=result['actuals'],
+                        predictions=result['predictions']
+                    )
+                    model.save_metrics()
+                    
+                    # Plot
+                    img_path = model.plot_predictions(
+                        dates=dates,
+                        actuals=result['actuals'],
+                        predictions=result['predictions']
+                    )
+                    
+                    # Log metrics & artifacts to MLflow
+                    if mlflow_available and active_run:
+                        mlflow.log_metrics(result['metrics'])
+                        if img_path:
+                            mlflow.log_artifact(str(img_path))
+                        # Log model outputs
+                        if model.model_dir.exists():
+                             mlflow.log_artifacts(str(model.model_dir), artifact_path="model_files")
+                
+                print(f"\n[OK] {model_name} for {ticker} completed successfully!")
+                print(f"  Metrics: {result['metrics']}")
+                
+            finally:
+                if mlflow_available and active_run:
+                    mlflow.end_run()
             
         except Exception as e:
             result['status'] = 'failed'
             result['error'] = str(e)
-            print(f"\n✗ Error training {model_name} for {ticker}: {e}")
+            print(f"\n[ERROR] Error training {model_name} for {ticker}: {e}")
             if self.verbose:
                 traceback.print_exc()
         

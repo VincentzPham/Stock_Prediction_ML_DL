@@ -20,6 +20,9 @@ LOGS_DIR = ROOT_DIR / "logs"
 # ============================================
 TICKERS = ['AAPL', 'AMZN', 'AVGO', 'BTC-USD', 'GOOG', 'META', 'MSFT', 'NVDA', 'SAP', 'TSLA', 'TSM']
 
+# Crypto tickers (trade 24/7, no market holidays)
+CRYPTO_TICKERS = ['BTC-USD', 'ETH-USD']
+
 IPO_DATES = {
     'AAPL': '1980-12-12',
     'AMZN': '1997-05-15',
@@ -59,6 +62,13 @@ TRAIN_TEST_SPLIT = 0.8
 TIME_STEP = 60  # Số ngày lookback cho LSTM/RNN
 FEATURE_COLUMNS = ['Close', 'High', 'Low', 'Open', 'Volume']
 TARGET_COLUMN = 'Close'
+
+# ============================================
+# MODEL TYPES
+# ============================================
+DEEP_LEARNING_MODELS = ['LSTM', 'BiLSTM', 'LSTM-GRU', 'RNN', 'ANN']
+TIME_SERIES_MODELS = ['ARIMA', 'SARIMA', 'Prophet', 'Exponential Smoothing']
+ML_MODELS = ['Random Forest', 'Decision Tree', 'Multiple Linear Regression']
 
 # ============================================
 # DEEP LEARNING HYPERPARAMETERS
@@ -201,3 +211,46 @@ def get_result_path(ticker: str, model_name: str) -> Path:
 def get_data_path(ticker: str) -> Path:
     """Trả về đường dẫn file CSV của ticker."""
     return DATA_DIR / f"{ticker}.csv"
+
+
+# ============================================
+# OPTUNA SEARCH SPACES
+# ============================================
+SEARCH_SPACES = {
+    # Deep Learning
+    'LSTM': {
+        'units_min': 32, 'units_max': 128,
+        'layers_min': 1, 'layers_max': 3,
+        'dropout_min': 0.1, 'dropout_max': 0.5,
+        'lr_min': 1e-4, 'lr_max': 1e-2
+    },
+    'BiLSTM': {
+        'units_min': 32, 'units_max': 128,
+        'layers_min': 1, 'layers_max': 3,
+        'dropout_min': 0.1, 'dropout_max': 0.5,
+        'lr_min': 1e-4, 'lr_max': 1e-2
+    },
+    'RNN': {
+        'units_min': 32, 'units_max': 128,
+        'layers_min': 1, 'layers_max': 3,
+        'dropout_min': 0.1, 'dropout_max': 0.5,
+        'lr_min': 1e-4, 'lr_max': 1e-2
+    },
+    'ANN': {
+        'units_min': 32, 'units_max': 256,
+        'layers_min': 1, 'layers_max': 4,
+        'dropout_min': 0.1, 'dropout_max': 0.5,
+        'lr_min': 1e-4, 'lr_max': 1e-2
+    },
+    
+    # Machine Learning
+    'Random Forest': {
+        'n_estimators_min': 50, 'n_estimators_max': 300,
+        'max_depth_min': 5, 'max_depth_max': 50
+    },
+    'Decision Tree': {
+        'max_depth_min': 5, 'max_depth_max': 50,
+        'min_samples_split_min': 2, 'min_samples_split_max': 20
+    }
+    # ARIMA/SARIMA excluded (manual config)
+}

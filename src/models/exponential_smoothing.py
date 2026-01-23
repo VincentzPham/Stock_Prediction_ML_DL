@@ -112,3 +112,17 @@ class ExponentialSmoothingModel(BaseModel):
             return np.array(forecast)
         else:
             raise ValueError("Phải cung cấp steps hoặc test_series.")
+
+    def predict_next(self, preprocessor, horizon: int = 1) -> float:
+        """
+        Dự đoán giá trị tương lai.
+        """
+        if self.model is None:
+            raise ValueError("Model chưa được load/train.")
+        
+        # Forecast horizon steps ahead
+        forecast = self.model.forecast(steps=horizon)
+        # Return the last prediction (for the horizon-th day)
+        prediction = forecast.iloc[-1] if hasattr(forecast, 'iloc') else forecast[-1]
+        
+        return float(prediction)

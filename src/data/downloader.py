@@ -58,12 +58,12 @@ class DataDownloader:
             progress=False
         )
         
-        print(f"  → {len(df)} rows downloaded")
+        print(f"  -> {len(df)} rows downloaded")
         
         if save:
             filepath = self.save_dir / f"{ticker}.csv"
             df.to_csv(filepath)
-            print(f"  → Saved to {filepath}")
+            print(f"  -> Saved to {filepath}")
         
         return df
     

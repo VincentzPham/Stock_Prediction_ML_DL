@@ -35,18 +35,11 @@ venv.bak/
 .vscode/
 
 # Large Data & Models (root level only)
-/Data/
-/Models/AAPL/SARIMA/
-/Models/AMZN/SARIMA/
-/Models/GOOG/SARIMA/
-/Models/MSFT/SARIMA/
-/Models/META/SARIMA/
-/Models/AVGO/SARIMA/
-/Models/NVDA/SARIMA/
-/Models/BTC-USD/SARIMA/
-/Models/SAP/SARIMA/
-/Models/TSLA/SARIMA/
-/Models/TSM/SARIMA/
+/Models/
+
+# DVC
+.dvc/cache
+.dvc/tmp
 
 # /Result/
 # *.pkl

@@ -303,6 +303,44 @@ ML_MODELS = ['Random Forest', 'Decision Tree', 'Multiple Linear Regression']
 
 ---
 
+## Hyperparameter Tuning (`src/training/tuner.py`)
+
+Module hỗ trợ tự động tối ưu hóa tham số mô hình sử dụng **Optuna**.
+
+### HyperparameterTuner
+
+Class chính để quản lý việc tuning.
+
+```python
+from training.tuner import HyperparameterTuner
+from training.trainer import MODEL_REGISTRY
+
+# Khởi tạo
+tuner = HyperparameterTuner(ticker='AAPL', n_trials=20)
+
+# Optimize (Trả về dictionary chứa best params)
+best_params = tuner.optimize(
+    model_name='LSTM', 
+    preprocessor=preprocessor, 
+    model_registry=MODEL_REGISTRY
+)
+```
+
+### Search Spaces
+Search spaces được cấu hình trong `src/config.py`:
+- **Deep Learning (LSTM/RNN/ANN)**:
+  - `units`: 32 - 128
+  - `layers`: 1 - 3
+  - `dropout`: 0.1 - 0.5
+  - `learning_rate`: 1e-4 - 1e-2 (log scale)
+- **Machine Learning**:
+  - `Random Forest`: `n_estimators` (50-300), `max_depth` (5-50)
+  - `Decision Tree`: `max_depth` (5-50)
+
+*Note: ARIMA/SARIMA/Prophet không hỗ trợ tuning tự động, sử dụng cấu hình thủ công.*
+
+---
+
 ## Scripts (`scripts/`)
 
 ### train_all.py
@@ -318,9 +356,39 @@ uv run python scripts/train_all.py -t AAPL -m "Random Forest"
 uv run python scripts/train_all.py --tickers AAPL,MSFT --models LSTM,ARIMA
 
 # Train theo loại
+# Train ML và DL models cho 2 mã (Combine flags)
+uv run python scripts/train_all.py --ml-only --dl-only --tickers AAPL,MSFT
+
+# Hyperparameter Tuning
+uv run python scripts/train_all.py -t AAPL -m LSTM --tune --trials 20
+
+# Train theo loại (có thể combine)
 uv run python scripts/train_all.py --ml-only      # Chỉ ML models
 uv run python scripts/train_all.py --dl-only      # Chỉ Deep Learning
 uv run python scripts/train_all.py --ts-only      # Chỉ Time Series
+
+# List available
+uv run python scripts/train_all.py --list-models
+uv run python scripts/train_all.py --list-tickers
+```
+
+---
+
+## MLOps Integration
+
+### MLflow Tracking
+Code training tự động tích hợp MLflow:
+- **Experiment**: `Stock_Prediction_{ticker}`
+- **Run Name**: `{model}_{timestamp}`
+- **Logged Params**: `model_name`, `ticker`, `config` (epochs, units, etc.)
+- **Logged Metrics**: `MSE`, `RMSE`, `MAE`, `MAPE`, `R2`
+- **Artifacts**: Prediction plots, Model files
+
+### DVC
+Sử dụng DVC để track Data và Models:
+- `Data/` folder
+- `Models/` folder
+- Sử dụng `dvc add` khi có changes.
 
 # List available
 uv run python scripts/train_all.py --list-models

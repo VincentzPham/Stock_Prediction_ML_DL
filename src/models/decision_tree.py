@@ -84,6 +84,26 @@ class DecisionTreeModel(BaseModel):
         
         predictions = self.model.predict(X)
         return predictions
+
+    def predict_next(self, preprocessor, horizon: int = 1) -> float:
+        """
+        Dự đoán giá trị tương lai.
+        """
+        if self.model is None:
+            raise ValueError("Model chưa được load/train.")
+            
+        # Get features used for ML
+        feature_cols = ['Open', 'High', 'Low', 'Volume', 'Price_Diff', 'Avg_Price', 'Volume_Ratio']
+        # Ensure columns exist in the dataframe
+        feature_cols = [c for c in feature_cols if c in preprocessor.df.columns]
+        
+        # Get the last row of data (most recent day)
+        X_input = preprocessor.df.iloc[[-1]][feature_cols].values
+        
+        # Predict
+        prediction = self.model.predict(X_input)[0]
+        
+        return float(prediction)
     
     def plot_tree(self, feature_names: list = None, save: bool = True) -> Optional[Path]:
         """Vẽ cây quyết định."""
