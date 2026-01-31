@@ -5,7 +5,6 @@ Multiple Linear Regression for stock prediction.
 
 import numpy as np
 from typing import Dict, Any
-from pathlib import Path
 
 from backend.config import ML_CONFIG
 from backend.models.base import BaseModel

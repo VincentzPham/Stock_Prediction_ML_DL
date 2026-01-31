@@ -3,16 +3,16 @@ SARIMA Model
 Seasonal ARIMA for stock prediction.
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from typing import Dict, Any
-from pathlib import Path
-import warnings
-
-warnings.filterwarnings("ignore")
 
 from backend.config import TS_CONFIG
 from backend.models.base import BaseModel
+
+warnings.filterwarnings("ignore")
 
 
 class SARIMAModel(BaseModel):
@@ -124,7 +124,6 @@ class SARIMAModel(BaseModel):
         predictions = []
 
         if self.use_log:
-            train_data = list(np.log(test_series.iloc[:0]))  # empty start
             history = list(self.train_data)
         else:
             history = list(self.train_data)

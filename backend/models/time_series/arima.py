@@ -3,16 +3,16 @@ ARIMA Model
 AutoRegressive Integrated Moving Average for stock prediction.
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from typing import Dict, Any
-from pathlib import Path
-import warnings
-
-warnings.filterwarnings("ignore")
 
 from backend.config import TS_CONFIG
 from backend.models.base import BaseModel
+
+warnings.filterwarnings("ignore")
 
 
 class ARIMAModel(BaseModel):
@@ -109,7 +109,6 @@ class ARIMAModel(BaseModel):
         from statsmodels.tsa.arima.model import ARIMA
 
         predictions = []
-        history = self.model.fittedvalues.tolist()
 
         # Get original training data
         train_data = list(self.model.model.endog)

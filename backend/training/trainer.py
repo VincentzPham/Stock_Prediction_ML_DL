@@ -4,12 +4,14 @@ Unified training interface for all models.
 """
 
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Type
+from typing import Dict, Any, Optional, List, Type, Callable
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import time
 import json
 import traceback
+from tqdm import tqdm
 
 from backend.config import (
     TICKERS,
@@ -56,14 +58,134 @@ MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
 # Model types imported from config
 
 
+def format_duration(seconds: float) -> str:
+    """Format seconds into human readable string (e.g., '4m 12s')."""
+    if seconds < 60:
+        return f"{seconds:.0f}s"
+    elif seconds < 3600:
+        mins = int(seconds // 60)
+        secs = int(seconds % 60)
+        return f"{mins}m {secs:02d}s"
+    else:
+        hours = int(seconds // 3600)
+        mins = int((seconds % 3600) // 60)
+        return f"{hours}h {mins:02d}m"
+
+
+class TrainingProgress:
+    """
+    Helper class để track training progress với tqdm.
+    Hỗ trợ callback cho Frontend integration.
+    """
+
+    def __init__(
+        self,
+        total: int,
+        desc: str = "Training",
+        progress_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
+    ):
+        self.total = total
+        self.completed = 0
+        self.current_model = None
+        self.current_ticker = None
+        self.start_time = None
+        self.model_start_time = None
+        self.completed_models: List[Dict[str, Any]] = []
+        self.progress_callback = progress_callback
+
+        # Create tqdm progress bar
+        self.pbar = tqdm(
+            total=total,
+            desc=desc,
+            unit="model",
+            bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+            ncols=80,
+        )
+        self.start_time = time.time()
+
+    def start_model(self, ticker: str, model_name: str):
+        """Bắt đầu training một model."""
+        self.current_ticker = ticker
+        self.current_model = model_name
+        self.model_start_time = time.time()
+        self.pbar.set_postfix_str(f"{ticker}/{model_name}")
+        self._emit_progress()
+
+    def end_model(self, status: str = "success", metrics: Optional[Dict] = None):
+        """Kết thúc training một model."""
+        duration = time.time() - self.model_start_time if self.model_start_time else 0
+
+        model_info = {
+            "ticker": self.current_ticker,
+            "model": self.current_model,
+            "duration": duration,
+            "duration_str": format_duration(duration),
+            "status": status,
+            "metrics": metrics or {},
+        }
+        self.completed_models.append(model_info)
+        self.completed += 1
+        self.pbar.update(1)
+
+        # Print completed model info
+        status_icon = "✓" if status == "success" else "✗"
+        metrics_str = ""
+        if metrics and "RMSE" in metrics:
+            metrics_str = f"  (RMSE: {metrics['RMSE']:.2f})"
+        tqdm.write(f"  {status_icon} {self.current_ticker}/{self.current_model}  {model_info['duration_str']}{metrics_str}")
+
+        self._emit_progress()
+
+    def get_progress_info(self) -> Dict[str, Any]:
+        """Trả về thông tin progress hiện tại (cho Frontend)."""
+        elapsed = time.time() - self.start_time if self.start_time else 0
+        avg_per_model = elapsed / self.completed if self.completed > 0 else 0
+        remaining = self.total - self.completed
+        eta = avg_per_model * remaining
+
+        return {
+            "total": self.total,
+            "completed": self.completed,
+            "remaining": remaining,
+            "current_ticker": self.current_ticker,
+            "current_model": self.current_model,
+            "elapsed": elapsed,
+            "elapsed_str": format_duration(elapsed),
+            "eta": eta,
+            "eta_str": format_duration(eta),
+            "avg_per_model": avg_per_model,
+            "avg_per_model_str": format_duration(avg_per_model),
+            "percent": (self.completed / self.total * 100) if self.total > 0 else 0,
+            "completed_models": self.completed_models,
+        }
+
+    def _emit_progress(self):
+        """Emit progress event to callback (nếu có)."""
+        if self.progress_callback:
+            try:
+                self.progress_callback(self.get_progress_info())
+            except Exception:
+                pass  # Ignore callback errors
+
+    def close(self):
+        """Đóng progress bar."""
+        self.pbar.close()
+        total_time = time.time() - self.start_time if self.start_time else 0
+        print(f"\n{'='*60}")
+        print(f"Total training time: {format_duration(total_time)}")
+        print(f"Average per model: {format_duration(total_time / self.completed if self.completed > 0 else 0)}")
+        print(f"{'='*60}")
+
+
 class ModelTrainer:
     """
     Unified trainer cho tất cả models.
     """
 
-    def __init__(self, verbose: bool = True):
+    def __init__(self, verbose: bool = True, progress_callback: Optional[Callable[[Dict[str, Any]], None]] = None):
         self.verbose = verbose
         self.results: Dict[str, Dict[str, Any]] = {}
+        self.progress_callback = progress_callback  # For Frontend integration
 
     def train_single(
         self,
@@ -98,7 +220,10 @@ class ModelTrainer:
             "status": "pending",
             "metrics": {},
             "error": None,
+            "duration": 0,
         }
+
+        train_start_time = time.time()
 
         try:
             # Load and prepare data
@@ -220,6 +345,9 @@ class ModelTrainer:
             print(f"\n[ERROR] Error training {model_name} for {ticker}: {e}")
             if self.verbose:
                 traceback.print_exc()
+
+        # Calculate duration
+        result["duration"] = time.time() - train_start_time
 
         # Store result
         key = f"{ticker}_{model_name}"
@@ -378,7 +506,7 @@ class ModelTrainer:
             metrics[f"MAE_H{h}"] = h_metrics["MAE"]
         
         if self.verbose:
-            print(f"\n  Returns-based metrics:")
+            print("\n  Returns-based metrics:")
             for h in horizons:
                 print(f"    H{h}: MAPE={metrics.get(f'MAPE_H{h}', 0):.2f}%")
         
@@ -483,22 +611,36 @@ class ModelTrainer:
 
         results = {}
 
-        print(f"\n{'#'*60}")
-        print(f"Training ALL models for {ticker}")
-        print(f"Models: {models}")
-        print(f"{'#'*60}")
+        print(f"\n{'='*60}")
+        print(f"TRAINING: {len(models)} models for {ticker}")
+        print(f"Models: {', '.join(models)}")
+        print(f"{'='*60}\n")
+
+        # Create progress tracker
+        progress = TrainingProgress(
+            total=len(models),
+            desc=f"Training {ticker}",
+            progress_callback=self.progress_callback,
+        )
 
         for model_name in models:
+            progress.start_model(ticker, model_name)
             try:
                 result = self.train_single(ticker, model_name, **kwargs)
                 results[model_name] = result
+                progress.end_model(
+                    status=result.get("status", "success"),
+                    metrics=result.get("metrics", {}),
+                )
             except Exception as e:
                 if skip_on_error:
-                    print(f"Skipping {model_name} due to error: {e}")
-                    results[model_name] = {"status": "failed", "error": str(e)}
+                    results[model_name] = {"status": "failed", "error": str(e), "duration": 0}
+                    progress.end_model(status="failed")
                 else:
+                    progress.close()
                     raise
 
+        progress.close()
         return results
 
     def predict_horizon(
@@ -624,32 +766,45 @@ class ModelTrainer:
             models = list(MODEL_REGISTRY.keys())
 
         total = len(tickers) * len(models)
-        print(f"\n{'#'*60}")
-        print(
-            f"TRAINING ALL: {len(models)} models × {len(tickers)} tickers = {total} runs"
-        )
-        print(f"{'#'*60}")
+        print(f"\n{'='*60}")
+        print(f"TRAINING: {len(models)} models × {len(tickers)} tickers = {total} runs")
+        print(f"Tickers: {', '.join(tickers)}")
+        print(f"Models: {', '.join(models)}")
+        print(f"{'='*60}\n")
 
         all_results = {}
-        completed = 0
+
+        # Create progress tracker
+        progress = TrainingProgress(
+            total=total,
+            desc="Training",
+            progress_callback=self.progress_callback,
+        )
 
         for ticker in tickers:
             for model_name in models:
-                completed += 1
-                print(f"\n[{completed}/{total}] {ticker} - {model_name}")
+                progress.start_model(ticker, model_name)
 
                 try:
                     result = self.train_single(ticker, model_name, **kwargs)
                     all_results[f"{ticker}_{model_name}"] = result
+                    progress.end_model(
+                        status=result.get("status", "success"),
+                        metrics=result.get("metrics", {}),
+                    )
                 except Exception as e:
                     if skip_on_error:
-                        print(f"Skipping due to error: {e}")
                         all_results[f"{ticker}_{model_name}"] = {
                             "status": "failed",
                             "error": str(e),
+                            "duration": 0,
                         }
+                        progress.end_model(status="failed")
                     else:
+                        progress.close()
                         raise
+
+        progress.close()
 
         # Save summary
         self._save_summary(all_results)

@@ -30,10 +30,15 @@ Usage:
 """
 
 import argparse
+import sys
 from pathlib import Path
 from datetime import datetime
 
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from backend.config import TICKERS
+from Data.get_data_auto import download_and_save_all as update_stock_data
 from backend.training.trainer import (
     ModelTrainer,
     MODEL_REGISTRY,
@@ -141,6 +146,12 @@ def parse_args():
         help="Number of Optuna trials for tuning (default: 20)",
     )
 
+    parser.add_argument(
+        "--use-returns",
+        action="store_true",
+        help="Use returns-based training for DL models (recommended for better predictions)",
+    )
+
     return parser.parse_args()
 
 
@@ -237,8 +248,7 @@ def main():
     # Update data (download latest CSVs)
     if not args.no_update_data:
         print("\nUpdating latest data from yfinance...")
-        downloader = DataDownloader()
-        downloader.download_all(tickers=tickers, save=True)
+        update_stock_data()
 
     trainer = ModelTrainer(verbose=True)
 
@@ -249,26 +259,27 @@ def main():
         "tune": args.tune,
         "n_trials": args.trials,
         "skip_on_error": args.skip_errors,
+        "use_returns": args.use_returns,
     }
 
     if len(tickers) == 1 and len(models) == 1:
         # Single training
-        result = trainer.train_single(
+        trainer.train_single(
             ticker=tickers[0], model_name=models[0], **train_kwargs
         )
     elif len(tickers) == 1:
         # All models for one ticker
-        results = trainer.train_all_models(
+        trainer.train_all_models(
             ticker=tickers[0], models=models, **train_kwargs
         )
     elif len(models) == 1:
         # One model for all tickers
-        results = trainer.train_all_tickers(
+        trainer.train_all_tickers(
             model_name=models[0], tickers=tickers, **train_kwargs
         )
     else:
         # All combinations
-        results = trainer.train_all(tickers=tickers, models=models, **train_kwargs)
+        trainer.train_all(tickers=tickers, models=models, **train_kwargs)
 
     # Summary
     end_time = datetime.now()

@@ -6,7 +6,7 @@ Xử lý và chuẩn bị dữ liệu cho các mô hình.
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from typing import Tuple, Optional, List, Dict
+from typing import Tuple, Optional, List
 from pathlib import Path
 import joblib
 
@@ -18,7 +18,6 @@ from backend.config import (
     PREDICTION_HORIZONS,
     MODELS_DIR,
 )
-from backend.data.sentiment_analyzer import SentimentAnalyzer
 
 
 class DataPreprocessor:
@@ -120,7 +119,7 @@ class DataPreprocessor:
         # ============================================
         try:
             print(f"Adding sentiment data for {self.ticker}...")
-            from data.sentiment_analyzer import SentimentAnalyzerV2
+            from backend.data.sentiment_analyzer import SentimentAnalyzerV2
             
             analyzer = SentimentAnalyzerV2(decay_halflife=3, rolling_window=3)
             sentiment_df = analyzer.get_daily_sentiment(self.ticker, days_back=30)
@@ -444,13 +443,6 @@ class DataPreprocessor:
         X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
         X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
         
-        metadata = {
-            "horizons": horizons,
-            "returns_scaler": self.returns_scaler,
-            "train_price_range": (train_prices.min(), train_prices.max()),
-            "test_price_range": (test_prices.min(), test_prices.max()),
-        }
-        
         # Return last_prices dict for price conversion
         last_prices = {
             "train": prices_train,
@@ -493,53 +485,6 @@ class DataPreprocessor:
         
         return np.array(X), np.array(y), np.array(last_prices)
 
-    def get_last_sequence_for_returns(
-        self, time_step: int = TIME_STEP, target_col: str = TARGET_COLUMN
-    ) -> Tuple[np.ndarray, float]:
-        """
-        Get the last sequence for making returns-based predictions.
-        
-        Returns:
-            X: Input sequence for prediction
-            last_price: The last known price (to convert returns to prices)
-        """
-        if self.df is None:
-            raise ValueError("Chưa load data.")
-        
-        if not hasattr(self, 'returns_scaler'):
-            raise ValueError("Returns scaler not fitted. Train first.")
-        
-        prices = self.df[target_col].values
-        log_returns = np.log(prices[1:] / prices[:-1])
-        
-        # Get last sequence of returns
-        last_returns = log_returns[-time_step:]
-        last_returns_scaled = self.returns_scaler.transform(last_returns.reshape(-1, 1)).flatten()
-        
-        # Shape for LSTM: (1, time_step, 1)
-        X = last_returns_scaled.reshape(1, time_step, 1)
-        
-        # Last known price
-        last_price = prices[-1]
-        
-        return X, last_price
-
-    def returns_to_prices(
-        self, cum_log_returns: np.ndarray, last_price: float
-    ) -> np.ndarray:
-        """
-        Convert cumulative log returns to actual prices.
-        
-        Args:
-            cum_log_returns: Predicted cumulative log returns for each horizon
-            last_price: The last known price
-            
-        Returns:
-            Predicted prices for each horizon
-        """
-        # Price_future = Price_current * exp(cum_log_return)
-        return last_price * np.exp(cum_log_returns)
-
     # ============================================
     # MULTI-HORIZON METHODS
     # ============================================
@@ -569,8 +514,6 @@ class DataPreprocessor:
         
         if horizons is None:
             horizons = PREDICTION_HORIZONS
-        
-        max_horizon = max(horizons)
         
         # Get target data
         data = self.df[target_col].values.reshape(-1, 1)

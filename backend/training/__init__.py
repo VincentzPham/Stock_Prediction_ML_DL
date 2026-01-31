@@ -1,2 +1,2 @@
 # Training Module
-from .trainer import ModelTrainer
+from .trainer import ModelTrainer as ModelTrainer

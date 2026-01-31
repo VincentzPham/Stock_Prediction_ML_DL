@@ -7,7 +7,7 @@ import numpy as np
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
-from backend.config import DL_CONFIG, TIME_STEP, TARGET_COLUMN, PREDICTION_HORIZONS
+from backend.config import DL_CONFIG, TIME_STEP, PREDICTION_HORIZONS
 from backend.models.base import BaseModel
 
 

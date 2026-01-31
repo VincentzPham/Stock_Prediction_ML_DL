@@ -189,17 +189,23 @@ class BaseModel(ABC):
             filename = f"{self.ticker}_{self.MODEL_NAME}_results_{timestamp}"
 
         # Tạo DataFrame kết quả
+        actual_arr = np.array(actuals).flatten()[-len(predictions):]
+        pred_arr = np.array(predictions).flatten()
+        
         results_df = pd.DataFrame(
             {
-                "Date": dates[-len(predictions) :],
-                "Actual": np.array(actuals).flatten()[-len(predictions) :],
-                "Predicted": np.array(predictions).flatten(),
+                "Date": dates[-len(predictions):],
+                "Actual": actual_arr,
+                "Predicted": pred_arr,
             }
         )
 
-        # Thêm metrics
-        for key, value in self.metrics.items():
-            results_df[key] = value
+        # Tính metrics cho mỗi dòng (per-row metrics)
+        error = pred_arr - actual_arr
+        results_df["MAE"] = np.abs(error).round(4)  # Absolute Error
+        results_df["MSE"] = (error ** 2).round(4)   # Squared Error
+        results_df["RMSE"] = np.abs(error).round(4) # For single value, RMSE = MAE
+        results_df["MAPE"] = (np.abs(error) / np.abs(actual_arr) * 100).round(4)  # Percentage Error
 
         filepath = self.result_dir / f"{filename}.csv"
         results_df.to_csv(filepath, index=False)

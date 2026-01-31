@@ -3,16 +3,17 @@ Prophet Model
 Facebook Prophet for stock prediction.
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Optional
 from pathlib import Path
-import warnings
-
-warnings.filterwarnings("ignore")
 
 from backend.config import TS_CONFIG
 from backend.models.base import BaseModel
+
+warnings.filterwarnings("ignore")
 
 
 class ProphetModel(BaseModel):

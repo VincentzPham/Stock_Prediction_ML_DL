@@ -20,8 +20,19 @@ Hệ thống bao gồm Training Pipeline, FastAPI Backend, và Streamlit UI.
 ```
 Stock/
 ├── backend/                     # Source code chính
-│   ├── api/                     # FastAPI Backend
-│   │   └── app.py
+│   ├── api/                     # FastAPI Backend (RESTful)
+│   │   ├── app.py               # Application factory
+│   │   ├── routes/              # API route handlers
+│   │   │   ├── root.py          # GET /
+│   │   │   ├── tickers.py       # /tickers endpoints
+│   │   │   ├── models.py        # /models endpoints
+│   │   │   └── predictions.py   # /predictions endpoints
+│   │   ├── schemas/             # Pydantic models
+│   │   │   ├── requests.py      # Request validation
+│   │   │   └── responses.py     # Response serialization
+│   │   └── services/            # Business logic
+│   │       ├── market_service.py      # Trading calendar
+│   │       └── prediction_service.py  # Prediction algorithms
 │   ├── config.py                # Cấu hình toàn cục
 │   ├── data/                    # Data processing
 │   │   ├── preprocessor.py
@@ -35,7 +46,13 @@ Stock/
 │       └── trainer.py
 │
 ├── frontend/                    # Streamlit Frontend
-│   └── app.py
+│   ├── app.py                   # Main Streamlit application
+│   ├── config.py                # Configuration constants
+│   ├── api_client.py            # API communication client
+│   ├── styles.py                # CSS styles and HTML templates
+│   └── components/              # Reusable UI components
+│       ├── charts.py            # Plotly chart components
+│       └── metrics.py           # Metrics display components
 │
 ├── scripts/                     # Scripts
 │   └── train_all.py             # Training CLI

@@ -27,4 +27,5 @@ dependencies = [
     "nltk>=3.9.1",
     "ruff>=0.9.3",
     "black>=24.10.0",
+    "pytest>=8.0.0",
 ]

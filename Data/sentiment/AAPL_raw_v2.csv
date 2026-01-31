@@ -1,17 +1,16 @@
 timestamp,headline,source,sentiment
-2026-01-06 08:00:00+00:00,"Dear Apple Stock Fans, Mark Your Calendars for January 12 - Yahoo Finance",GoogleNews,0.3818
 2026-01-08 08:00:00+00:00,Apple Stock: Time To Get Out (NASDAQ:AAPL) - Seeking Alpha,GoogleNews,0.0
 2026-01-12 08:00:00+00:00,Will AAPL Stock Rally Again in 2026 to Help Apple Regain the Throne as the Biggest Company? - Yahoo Finance,GoogleNews,0.4019
+2026-01-15 08:00:00+00:00,How Apple Stock Could Add $100 Per Share in 2026 and Beyond - Yahoo Finance,GoogleNews,0.296
 2026-01-15 08:00:00+00:00,Apple: Setting Up For An Earnings Surprise (NASDAQ:AAPL) - Seeking Alpha,GoogleNews,0.2732
+2026-01-19 08:00:00+00:00,Apple (AAPL) Q4 Earnings Preview: Services in Focus as iPhone Growth Slows - FOREX.com,GoogleNews,0.3818
 2026-01-21 08:00:00+00:00,Apple's weakness is a 'buying opportunity' into earnings: Goldman (AAPL:NASDAQ) - Seeking Alpha,GoogleNews,0.0
 2026-01-22 08:00:00+00:00,Why Apple’s Sell-Off May Be Overdone Right Before Earnings - MarketBeat,GoogleNews,0.0
 2026-01-24 15:59:44+00:00,Jim Cramer Reveals Why Apple (AAPL) Stock is Struggling - Yahoo Finance,GoogleNews,-0.4215
 2026-01-26 20:55:43+00:00,"Apple (AAPL) Stock Trades Up, Here Is Why - Yahoo Finance",GoogleNews,0.0
 2026-01-27 15:13:18+00:00,Apple stock price today: AAPL climbs at the open as $315 target meets earnings week - TechStock²,GoogleNews,0.0
-2026-01-27 21:08:00+00:00,"APPLE Q1 2026 Earnings Preview: Recent $AAPL Insider Trading, Hedge Fund Activity, and More - Quiver Quantitative",GoogleNews,0.0
 2026-01-28 01:00:03+00:00,Apple: Rolling Over Into Key Earnings - Seeking Alpha,GoogleNews,0.0
-2026-01-28 03:03:00+00:00,Apple (AAPL) Q4 Earnings Report Preview: What To Look For - Yahoo Finance,GoogleNews,0.0
-2026-01-28 03:22:38+00:00,Apple (AAPL) Q4 Earnings Report Preview: What To Look For - Finviz,GoogleNews,0.0
+2026-01-28 11:03:45+00:00,Apple Earnings Are Coming – Should You Buy AAPL Stock? - TipRanks,GoogleNews,0.0
 2026-01-28 11:30:06+00:00,Apple Inc. $AAPL Stock Holdings Lowered by SkyOak Wealth LLC - MarketBeat,GoogleNews,0.4019
 2026-01-28 15:40:35+00:00,Apple Q1 earnings preview: Wedbush continues to see AAPL as ‘top pick’ - TradingView,GoogleNews,0.0
 2026-01-28 16:03:00+00:00,Apple report drops iPhone 18 bombshell - thestreet.com,GoogleNews,0.0
@@ -23,7 +22,6 @@ timestamp,headline,source,sentiment
 2026-01-29 03:35:14+00:00,"AAPL Apple Inc. (NASDAQ) 28 Jan 2026: AAPL stock at $256.44 as earnings loom, watch guidance - Meyka",GoogleNews,-0.2263
 2026-01-29 06:13:29+00:00,What Could Set Apple Stock on Fire - Trefis,GoogleNews,-0.34
 2026-01-29 09:05:46+00:00,B&D White Capital Company LLC Trims Stock Position in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.0
-2026-01-29 09:05:48+00:00,Chokshi & Queen Wealth Advisors Inc Reduces Stake in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.4939
 2026-01-29 09:05:48+00:00,"Birch Hill Investment Advisors LLC Buys 9,687 Shares of Apple Inc. $AAPL - MarketBeat",GoogleNews,0.296
 2026-01-29 09:05:50+00:00,Apple Inc. $AAPL Stock Position Boosted by Benjamin Edwards Inc. - MarketBeat,GoogleNews,0.3612
 2026-01-29 09:05:50+00:00,Apple Inc. $AAPL Stock Holdings Increased by Citizens National Bank Trust Department - MarketBeat,GoogleNews,0.6597
@@ -31,40 +29,31 @@ timestamp,headline,source,sentiment
 2026-01-29 10:15:00+00:00,Apple Is the Second-Worst-Performing Dow Jones Stock So Far in 2026. Is the Sell-Off a Buying Opportunity? - The Motley Fool,GoogleNews,-0.0258
 2026-01-29 10:33:00+00:00,Apple Earnings Today: What Results Could Move AAPL Stock Next - EBC Financial Group,GoogleNews,0.0
 2026-01-29 10:40:09+00:00,Apple Inc. $AAPL Shares Sold by Groesbeck Investment Management Corp NJ - MarketBeat,GoogleNews,0.296
-2026-01-29 12:30:46+00:00,“2026 Will be Massive”: Wedbush Analyst Remains Bullish on Apple Stock (AAPL) ahead of Q1 Earnings - TipRanks,GoogleNews,0.0
+2026-01-29 12:29:46+00:00,“2026 Will be Massive”: Wedbush Analyst Remains Bullish on Apple Stock (AAPL) ahead of Q1 Earnings - TipRanks,GoogleNews,0.0
 2026-01-29 13:38:27+00:00,"Stocks to watch on Thursday: V, MA, AAPL, JOBY - Seeking Alpha",GoogleNews,0.0
-2026-01-29 14:31:17+00:00,Tsai Capital: Apple (AAPL) Remains one of the Highest-Quality Businesses on the Planet - Insider Monkey,GoogleNews,0.0
-2026-01-29 14:53:25+00:00,What Could Send Apple Stock To New All-Time Highs? - Forbes,GoogleNews,0.0
+2026-01-29 14:29:21+00:00,Tsai Capital: Apple (AAPL) Remains one of the Highest-Quality Businesses on the Planet - Yahoo Finance UK,GoogleNews,0.0
 2026-01-29 16:34:31+00:00,Ross Gerber Demands Tim Cook Resign: ‘He Hasn’t Done a Thing in Years’ on AI - 24/7 Wall St.,GoogleNews,-0.34
 2026-01-29 17:00:02+00:00,Apple sales surge 16% on ‘staggering’ iPhone demand - CNBC,GoogleNews,-0.128
 2026-01-29 19:53:26+00:00,Live: Will Apple Soar After Q1 Earnings Tonight? - 24/7 Wall St.,GoogleNews,0.0
 2026-01-29 20:00:00+00:00,Listen to Apple's (AAPL) Q1 FY26 earnings call here - Shacknews,GoogleNews,0.0
-2026-01-29 20:30:39+00:00,Apple Earnings Are Coming – Should You Buy AAPL Stock? - TipRanks,GoogleNews,0.0
 2026-01-29 20:33:00+00:00,Apple (AAPL) acquires AI audio technology company Q.ai for an alleged $2 billion - Shacknews,GoogleNews,0.0
 2026-01-29 21:00:47+00:00,‘Time to Cash Out’: Top Investor Calls Apple Stock Too Expensive for Slowing Growth - TipRanks,GoogleNews,0.5267
 2026-01-29 21:30:39+00:00,Apple's $143.8B quarter sets all-time records and 2.5B devices - Stock Titan,GoogleNews,0.0
+2026-01-29 21:34:01+00:00,Apple’s Upbeat Forecast Clouded by Fears About Rising Costs - Bloomberg.com,GoogleNews,-0.4588
 2026-01-29 21:35:00+00:00,"Apple reports record-breaking Q1 2026 earnings: $143.7 billion in revenue, up 16% - 9to5Mac",GoogleNews,0.0
-2026-01-29 21:40:30+00:00,Apple (NASDAQ:AAPL) Delivers Impressive Q4 CY2025 - Yahoo Finance,GoogleNews,0.5106
 2026-01-29 21:40:30+00:00,Apple (NASDAQ:AAPL) Delivers Impressive Q4 CY2025 - Barchart.com,GoogleNews,0.5106
+2026-01-29 21:40:30+00:00,Apple (NASDAQ:AAPL) Delivers Impressive Q4 CY2025 - Yahoo Finance,GoogleNews,0.5106
 2026-01-29 21:41:14+00:00,AAPL Earnings: Apple Stock Rises after Smashing Estimates - TipRanks,GoogleNews,0.0
 2026-01-29 21:43:00+00:00,Apple posts record quarter on soaring iPhone sales - Proactive financial news,GoogleNews,0.4215
 2026-01-29 22:06:39+00:00,"Stocks making the biggest moves after hours: Apple, Robinhood, Visa, Sandisk and more - CNBC",GoogleNews,0.0
 2026-01-29 22:13:00+00:00,Apple (AAPL) Q1 FY26 earnings results beat EPS and revenue expectations - Shacknews,GoogleNews,0.0
 2026-01-29 22:18:09+00:00,"Apple (NASDAQ:AAPL) Posts Earnings Results, Beats Estimates By $0.19 EPS - MarketBeat",GoogleNews,0.0
 2026-01-29 22:32:31+00:00,AAPL stock price surges today after Apple earnings beat estimates – record iPhone sales and China growth d - The Economic Times,GoogleNews,0.3818
-2026-01-29 22:40:01+00:00,Apple (AAPL) Q1 Earnings and Revenues Top Estimates - Yahoo Finance Singapore,GoogleNews,0.2023
 2026-01-29 22:45:00+00:00,Tim Cook says Apple (AAPL) now has 2.5 billion devices actively in use - Shacknews,GoogleNews,0.3182
 2026-01-29 22:45:38+00:00,"Big Tech Earnings Live: Apple Beats Wall Street Estimates; Meta Stock Surges, Microsoft Plunges After Results - Investopedia",GoogleNews,0.0
-2026-01-29 17:48:00-05:00,Apple gives a rosy revenue outlook for the current quarter,FinViz,0.0
-2026-01-29 18:02:00-05:00,"Apple CEO Tim Cook talks memory shortages, other supply constraints",FinViz,-0.1531
-2026-01-29 18:04:00-05:00,Apple executives are a bit cagey on Gemini details,FinViz,0.0
 2026-01-29 23:09:32+00:00,"Apple Inc. (NASDAQ:AAPL) Reports Strong Q1 2026 Earnings, Beating Revenue and EPS Estimates - Chartmill",GoogleNews,0.0772
-2026-01-29 18:10:00-05:00,"On Potential Price Hikes, Tim Cook Doesn't Want to 'Speculate'",FinViz,-0.0572
-2026-01-29 18:11:00-05:00,Apple Increasingly Looks to India for Sales and Manufacturing,FinViz,0.0
 2026-01-29 23:15:50+00:00,"Apple Q1: Don't Buy These Earnings, Limited Upside (NASDAQ:AAPL) - Seeking Alpha",GoogleNews,-0.2263
-2026-01-29 18:20:00-05:00,The iPhone 17 is easing Wall Streets concerns about Apples AI troubles,FinViz,-0.25
-2026-01-29 18:20:00-05:00,Tim Cook touts unique Apple AI strategy,FinViz,-0.0258
-2026-01-29 18:23:00-05:00,'Fast Money' traders react to Apple's quarterly earnings beat,FinViz,0.0
+2026-01-29 23:21:27+00:00,Live: Analysis of Apple’s First-Quarter Earnings - Bloomberg.com,GoogleNews,0.0
 2026-01-29 18:30:00-05:00,Apple (AAPL) Q1 Earnings: How Key Metrics Compare to Wall Street Estimates,FinViz,0.0
 2026-01-29 23:35:00+00:00,"Apple Posts Blowout iPhone Sales, but Investors Focus on Higher Costs - The Wall Street Journal",GoogleNews,0.0
 2026-01-29 18:35:00-05:00,"Apple Posts Blowout iPhone Sales, but Investors Focus on Higher Costs",FinViz,0.0
@@ -84,39 +73,121 @@ timestamp,headline,source,sentiment
 2026-01-29 20:57:00-05:00,Apples blowout Q1 results were a reminder of what makes the company so impressiveand why its floundering in AI,FinViz,0.0
 2026-01-30 02:07:39+00:00,Apple Stock (AAPL) Slips in Pre-Market After Earnings— Analysts Weigh In on Outlook and AI - TipRanks,GoogleNews,0.0
 2026-01-30 04:01:15+00:00,Apple (AAPL) Valuation Check After Record iPhone 17 Quarter And New Google AI Deal - simplywall.st,GoogleNews,0.0
+2026-01-30 00:02:00-05:00,Apple Inc (AAPL) Q1 2026 Earnings Call Highlights: Record Revenue and iPhone Sales Propel Growth,FinViz,0.3818
+2026-01-30 00:09:00-05:00,Analyst Report: Apple Inc.,FinViz,0.0
+2026-01-30 01:23:00-05:00,"Apple to prioritize premium iPhone launches in 2026 amid memory crunch, Nikkei Asia reports",FinViz,0.0
+2026-01-30 02:37:00-05:00,Gene Munster Says Apple Stock's Tepid Reaction To Strong Earnings Beat Comes Down To One Thing: Investors Want More AI Substance,FinViz,0.5574
+2026-01-30 02:59:00-05:00,"Stock Market Today: Dow set for 385-point loss, S&P 500 and Nasdaq to open lower on expectations Warsh to get top Fed job; gold slumps",FinViz,-0.4019
+2026-01-30 03:11:00-05:00,"Elon Musk Says 'Very Different' AI-First Phone Is 'Not Out Of The Question,' Even After Insisting He Hopes He Never Has To Make One",FinViz,0.4215
 2026-01-30 08:17:06+00:00,"AAPL: Apple Stock Steady Despite Best-Ever Quarter, Revenue Jumps 16% to Record - TradingView",GoogleNews,0.0
-2026-01-30 08:48:53+00:00,Apple Inc. $AAPL Shares Sold by Beaumont Financial Advisors LLC - MarketBeat,GoogleNews,0.296
+2026-01-30 03:46:00-05:00,'Best iPhone Quarter In History': Tim Cook Says Apple's China Revenue Soared 38% On iPhone 17 Demand,FinViz,0.5719
 2026-01-30 08:48:53+00:00,Apple Inc. $AAPL Shares Bought by Duncker Streett & Co. Inc. - MarketBeat,GoogleNews,0.296
-2026-01-30 08:48:54+00:00,Apple Inc. $AAPL Shares Sold by Dock Street Asset Management Inc. - MarketBeat,GoogleNews,0.5719
+2026-01-30 08:48:53+00:00,Apple Inc. $AAPL Shares Sold by Beaumont Financial Advisors LLC - MarketBeat,GoogleNews,0.296
 2026-01-30 08:59:19+00:00,Apple Q1 FY26 Earnings Beats Estimates; AAPL Earnings Decoded - INDmoney,GoogleNews,0.0
-2026-01-30 09:48:25+00:00,"Nasdaq, S&P 500 Futures Slide As Warsh Fed Chair Buzz, Canada Trade Tensions Weigh: Why AAPL, SOFI, SNDK, GME, XOM Are On Traders' Radar Today - Stocktwits",GoogleNews,-0.4019
-2026-01-30 10:19:20+00:00,Trevian Wealth Management LLC Lowers Stake in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.4019
+2026-01-30 05:13:00-05:00,"Premarket trades: Warsh takes a bite of Apple shares, while Sandisk soars and miners slump",FinViz,0.296
 2026-01-30 10:19:25+00:00,"11,841 Shares in Apple Inc. $AAPL Bought by Invested Advisors - MarketBeat",GoogleNews,0.296
-2026-01-30 10:19:29+00:00,Steinberganna Wealth Management Invests $12.59 Million in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.4939
-2026-01-30 10:21:31+00:00,Apple Inc. $AAPL Shares Purchased by Kingswood Wealth Advisors LLC - MarketBeat,GoogleNews,0.6597
+2026-01-30 05:21:00-05:00,"Stock Market Today: Nasdaq, S&P 500 Futures Decline As Investors Await Trump's New Fed Chair Pick- SanDisk, Deckers, Robinhood In Focus",FinViz,0.1027
+2026-01-30 05:30:00-05:00,Memory Shortage Haunts Apple's Blowout iPhone Sales,FinViz,-0.4588
 2026-01-30 10:31:58+00:00,Apple stock (AAPL) ticks higher before the bell after iPhone-driven outlook — but supply risks loom - TechStock²,GoogleNews,-0.6124
-2026-01-30 11:02:21+00:00,Apple Chooses High-End Buyers As Chips Run Out - Benzinga,GoogleNews,0.0
-2026-01-30 12:03:53+00:00,‘Eventual Edge-AI Winner’: Five-Star Analyst Backs Apple Stock (AAPL) after Q1 - TipRanks,GoogleNews,-0.0516
+2026-01-30 05:40:00-05:00,"These Stocks Are Today's Movers: Apple, Sandisk, Western Digital, KLA Corp., Microsoft, and More",FinViz,0.0
+2026-01-30 05:52:00-05:00,Big Tech thinks smart glasses will be the first major piece of AI hardware,FinViz,0.4019
+2026-01-30 06:02:00-05:00,Apple Chooses High-End Buyers As Chips Run Out,FinViz,0.0
+2026-01-30 06:27:00-05:00,"Dow Jones Futures Fall With Trump Fed Pick Due; Tesla Pops, Sandisk Soars",FinViz,0.0
+2026-01-30 06:36:00-05:00,Ken Griffins $60 Billion Bet: Inside Citadels 5 Mega-Cap Convictions for January 2026,FinViz,0.0
+2026-01-30 06:39:00-05:00,"Dow Jones Futures Fall With Trump Fed Pick Due; Sandisk Soars, Tesla Rises On SpaceX Buzz",FinViz,0.0
+2026-01-30 06:40:00-05:00,"Apple Inc. Posts $143.8B Quarter, Guides 13--16% Revenue Growth",FinViz,0.3818
+2026-01-30 06:40:00-05:00,Apple To Focus On Premium iPhone Launches In 2026 Amid Memory Chips Constraint: Report,FinViz,0.0
+2026-01-30 07:01:00-05:00,Apple Notches Record-Breaking $143.8 Billion Sales -- Guides Double-Digit Growth,FinViz,0.3818
+2026-01-30 07:04:00-05:00,"Tech, Media & Telecom Roundup: Market Talk",FinViz,0.0
+2026-01-30 07:13:00-05:00,"Apple to prioritize premium iPhones in 2026, delay standard model",FinViz,-0.3182
+2026-01-30 07:27:00-05:00,"Microsoft Loses, Sandisk Wins, Apple Drifts. AI Is Upending Tech.",FinViz,0.34
 2026-01-30 13:00:33+00:00,Beyond The Numbers: 15 Analysts Discuss Apple Stock - Benzinga,GoogleNews,0.0
+2026-01-30 08:05:00-05:00,"Earnings live: Sandisk stock soars on profit beat, Verizon stock climbs, Exxon and Chevron beat estimates",FinViz,0.4404
 2026-01-30 13:20:16+00:00,Monness Crespi & Hardt Boosts Apple (NASDAQ:AAPL) Price Target to $315.00 - MarketBeat,GoogleNews,0.3182
 2026-01-30 13:20:22+00:00,Rosenblatt Securities Forecasts Strong Price Appreciation for Apple (NASDAQ:AAPL) Stock - MarketBeat,GoogleNews,0.8316
 2026-01-30 13:21:11+00:00,"Wingate Wealth Advisors Inc. Buys 2,225 Shares of Apple Inc. $AAPL - MarketBeat",GoogleNews,0.6597
 2026-01-30 13:22:33+00:00,Apple (NASDAQ:AAPL) Stock Rating Upgraded by Maxim Group - MarketBeat,GoogleNews,0.0
+2026-01-30 08:25:00-05:00,Stocks Set to Open Lower After Trump Announces Warsh as Fed Pick,FinViz,-0.296
+2026-01-30 08:31:00-05:00,5 Things to Know Before the Stock Market Opens,FinViz,0.0
+2026-01-30 08:33:00-05:00,"Apple Q1 Earnings Beat Estimates, iPhone Drives Top-Line Growth",FinViz,0.3818
 2026-01-30 13:41:00+00:00,JP Morgan hikes Apple stock target to $325 after record-breaking earnings - AppleInsider,GoogleNews,0.368
+2026-01-30 09:00:00-05:00,Should You Bet on Apple's iPhone-Driven Q1 Earnings? ETFs in Focus,FinViz,0.0
+2026-01-30 09:06:00-05:00,"Trump's Fed nominee, Apple earnings, gold prices sink: 3 Things",FinViz,0.0
+2026-01-30 09:10:00-05:00,Stock Futures Pointed Lower Despite Fed Chair Nomination,FinViz,-0.296
+2026-01-30 09:13:00-05:00,ETFs to Buy as Microsoft's Shares Slump Despite Q2 Earnings Beat,FinViz,0.296
 2026-01-30 14:13:33+00:00,"Apple Thinks Differently, Again: Q1 FY2026 Earnings Review (NASDAQ:AAPL) - Seeking Alpha",GoogleNews,0.0
+2026-01-30 09:15:00-05:00,"Apple Troubles Deepen, Magnificent 7 Dies",FinViz,0.2263
 2026-01-30 14:21:00+00:00,New Analyst Forecast: $AAPL Given $267 Price Target - Quiver Quantitative,GoogleNews,0.0
 2026-01-30 14:21:26+00:00,Apple Inc. (AAPL) Analysts Update Price Targets After Earnings Report - The Globe and Mail,GoogleNews,0.0
-2026-01-30 14:35:07+00:00,Apple’s Upbeat Forecast Clouded by Fears About Rising Costs - Bloomberg,GoogleNews,-0.4588
+2026-01-30 09:36:00-05:00,Cramer Reminds Panicked Investors: Stocks Dont Go Down Because People Are in a Bad Mood,FinViz,-0.7579
+2026-01-30 09:37:00-05:00,"Stock market today: Dow, S&P 500, Nasdaq fall as Wall Street digests Warsh as Trump's Fed pick",FinViz,0.0
+2026-01-30 09:38:00-05:00,"Stocks to Watch Friday: Apple, Sandisk, Verizon",FinViz,0.0
+2026-01-30 09:39:00-05:00,AI Monetization Is the Story for Apple in 2026: Dan Ives,FinViz,0.0
+2026-01-30 09:45:00-05:00,"Stock Market Today: Dow Falls On Surprise Inflation Data, Warsh Nomination; Tesla Rallies (Live Coverage)",FinViz,0.2732
+2026-01-30 09:48:00-05:00,Why Apple's Earnings Matter More For Tech ETFs Than Growth Stocks,FinViz,0.4019
+2026-01-30 10:00:00-05:00,"Apple Posts Record Quarter, But AI Details Remain Unclear",FinViz,-0.3612
+2026-01-30 10:02:00-05:00,"Apple had 'phenomenal' Q1, but what are its plans for AI?",FinViz,0.0
 2026-01-30 15:02:54+00:00,"Apple Posts Record Quarter, But AI Details Remain Unclear - MarketBeat",GoogleNews,-0.3612
-2026-01-30 15:06:38+00:00,Apple stock price rises after earnings beat and upbeat forecast — AAPL investors watch chip crunch - TechStock²,GoogleNews,0.0
+2026-01-30 10:05:00-05:00,Apple's Q1 earnings beat: Key takeaways,FinViz,0.0
+2026-01-30 10:06:00-05:00,"AAPL Stock Slides Despite Record iPhone Sales, Bull Notes",FinViz,0.0
+2026-01-30 15:06:36+00:00,"AAPL Stock Slides Despite Record iPhone Sales, Bull Notes - Schaeffer's Investment Research",GoogleNews,0.0
+2026-01-30 10:16:00-05:00,Google Stock In Buy Zone Ahead Of Earnings Feb. 4; Is It Actionable Now?,FinViz,0.0
+2026-01-30 10:16:00-05:00,The Magnificent 7 Are Starting To Look Too Cheap To Ignore,FinViz,0.34
 2026-01-30 15:17:01+00:00,Apple Inc. Plans Quarterly Dividend of $0.26 (NASDAQ:AAPL) - MarketBeat,GoogleNews,0.0
+2026-01-30 10:23:00-05:00,Why Apple's blockbuster earnings weren't enough to move the stock,FinViz,0.5994
+2026-01-30 10:34:00-05:00,Should Investors Worry About Symbotic's Walmart Exposure?,FinViz,-0.4404
+2026-01-30 10:42:00-05:00,"Amazon Stock, Alphabet, Palantir Headline Another Busy Earnings Calendar",FinViz,0.1779
 2026-01-30 15:55:17+00:00,"Apple's (AAPL) ""Neutral"" Rating Reiterated at DA Davidson - MarketBeat",GoogleNews,0.0
-2026-01-30 16:23:10+00:00,JPMorgan Raises Price Target on Apple Stock (AAPL) for the Second Time in a Week - TipRanks,GoogleNews,0.0
-2026-01-30 17:05:10+00:00,Gold Tumbles Over 6%; Apple Posts Upbeat Earnings - Benzinga,GoogleNews,0.0
+2026-01-30 11:00:00-05:00,"Here's what's worth streaming in February 2026 on Netflix, Hulu, Peacock and more",FinViz,0.2263
+2026-01-30 11:11:00-05:00,He's Wall Street's Biggest Showman. Should You Trust Him?,FinViz,0.5106
+2026-01-30 16:22:07+00:00,JPMorgan Raises Price Target on Apple Stock (AAPL) for the Second Time in a Week - TipRanks,GoogleNews,0.0
+2026-01-30 11:54:00-05:00,Stock Market Today: Dow Falls On Surprise Inflation Data; Gold Stocks Crater (Live Coverage),FinViz,0.2732
+2026-01-30 11:57:00-05:00,Apple Faces iPhone Shortages Amid Chip Production Constraints,FinViz,-0.1531
+2026-01-30 12:00:00-05:00,Apple: Why this analyst upgraded the stock despite margin worries,FinViz,0.3252
+2026-01-30 12:02:00-05:00,"Hot Inflation Data, Rising Yields Pressure Stocks Lower",FinViz,-0.5267
+2026-01-30 12:05:00-05:00,Apple 'Selling Its Soul To The Devil'? Analyst Says Partnering With Alphabet Limits AI Upside,FinViz,0.0
+2026-01-30 12:11:00-05:00,"FSD's Big Week, Greg Abel Makes a Mark on Berkshire Hathaway, and 24/7 Trading",FinViz,0.0
+2026-01-30 12:23:00-05:00,S&P 500 and Nasdaq Slide as Tech Stocks Retreat Amid Fed Chair Talk,FinViz,0.2023
+2026-01-30 12:24:00-05:00,"Stock Market Mixed: Meta, Microsoft, Tesla, Sandisk Lead Huge Earnings; Trump Makes Fed Chief Pick: Weekly Review",FinViz,0.3182
+2026-01-30 12:42:00-05:00,Apple iPhone Revenue Jumps 23% to $85.27 Billion,FinViz,0.0
+2026-01-30 12:50:00-05:00,Apple Bear Weighs In on iPhone Maker's Record Results,FinViz,0.0
+2026-01-30 12:59:00-05:00,The Stock Market Has Lots of Questionsand Not Many Answers,FinViz,0.0
+2026-01-30 13:14:00-05:00,"Stock market today: Dow, S&P 500, Nasdaq slide after Trump picks Warsh for Fed; gold, silver plunge",FinViz,0.0
+2026-01-30 13:27:00-05:00,Where Will This AI Stock Be in 5 Years? The Numbers Tell a Story,FinViz,0.0
+2026-01-30 13:31:00-05:00,ServiceNow Slump Highlights Software Stock Challenges in the Age of AI,FinViz,0.0772
+2026-01-30 13:37:00-05:00,"Stocks to Watch Friday: Apple, Sandisk, Verizon, Sofi",FinViz,0.0
+2026-01-30 13:43:00-05:00,"Dow Headed for 3rd-Straight Weekly Loss, February Gain",FinViz,0.2732
+2026-01-30 13:45:00-05:00,Apple-Google partnership should 'de-risk' AI for iPhone maker,FinViz,0.0
 2026-01-30 18:51:00+00:00,"Apple (NASDAQ:AAPL) Receives ""Buy"" Rating from TD Cowen - MarketBeat",GoogleNews,0.0
-2026-01-30 19:21:10+00:00,Live: Analysis of Apple’s First-Quarter Earnings - Bloomberg,GoogleNews,0.0
+2026-01-30 14:10:00-05:00,Apple's $500 Check Worth $2.4 Million 50 Years Later - A Steve Jobs Signature Just Turned Into Gold,FinViz,0.2263
+2026-01-30 14:34:00-05:00,Apple loses more AI researchers to Meta and Google DeepMind,FinViz,-0.3182
+2026-01-30 15:07:00-05:00,Microsoft Staged AI's Greatest Test Case. It May Not Be Working.,FinViz,0.6369
 2026-01-30 20:08:00+00:00,"January 30, 2026 – AAPL earnings, $2B acquisition - 9to5Mac",GoogleNews,0.0
+2026-01-30 15:28:00-05:00,Streaming Costs Are Rising Fast. Is 'Streamflation' Hitting Your Wallet This Year?,FinViz,0.0
 2026-01-30 20:33:00+00:00,JP Morgan reviews Apple’s stock price target following Q1 2026 earnings - 9to5Mac,GoogleNews,0.368
+2026-01-30 16:00:00-05:00,"Stock market today: Dow, S&P 500, Nasdaq cap 3rd straight losing week, metals sink after Trump taps Warsh for Fed",FinViz,-0.1779
+2026-01-30 16:00:00-05:00,"Stock market today: Dow, S&P 500, Nasdaq slide to cap volatile week and month, metals sink after Trump taps Warsh for Fed",FinViz,0.0
+2026-01-30 16:29:00-05:00,Stocks Slip Friday; Dow Extends Monthly Win Streak,FinViz,0.6486
 2026-01-30 21:39:33+00:00,Apple: Booming iPhone 17 Vs. Soaring Memory Costs (Rating Downgrade) (NASDAQ:AAPL) - Seeking Alpha,GoogleNews,0.0
+2026-01-30 16:42:00-05:00,"These Stocks Are Todays Movers: Apple, Verizon, SoFi, Sandisk, Western Digital, Unity Software, Exxon, and More",FinViz,0.0
+2026-01-30 16:45:00-05:00,Apple Just Delivered Great News For This Market-Crushing AI Stock,FinViz,0.6249
 2026-01-30 21:45:55+00:00,Apple stock heads into next week with one big question: can AAPL dodge the memory-chip crunch? - TechStock²,GoogleNews,0.0
+2026-01-30 16:58:00-05:00,Apple Is Reportedly Looking to Partner with Intel Foundry. Does That Make INTC Stock a Buy Here?,FinViz,0.0
+2026-01-30 16:58:00-05:00,"Earnings live: Verizon, Sandisk stocks surge to cap a Big Tech-heavy earnings week",FinViz,0.0
+2026-01-30 16:59:00-05:00,"Stock Market Today: Dow Sinks On Inflation, Fed News; Gold, Silver Stocks Plunge (Live Coverage)",FinViz,0.0
+2026-01-30 17:13:00-05:00,"Stocks to Watch Friday Recap: Apple, Sandisk, Verizon, Roblox",FinViz,0.0
 2026-01-30 22:23:59+00:00,Apple (AAPL) Makes Premium Pivot as Supply-Chain Pressures Mount - TipRanks,GoogleNews,-0.3182
+2026-01-31 01:46:40+00:00,Apple Target of Unusually Large Options Trading (NASDAQ:AAPL) - MarketBeat,GoogleNews,0.0
+2026-01-30 21:56:00-05:00,"Apple vs. Meta Platforms: Which ""Magnificent Seven"" Stock Is a Better Buy Right Now?",FinViz,0.7783
+2026-01-31 04:58:28+00:00,Apple’s Q.ai Deal Links AI Push With Revenue Strength And Valuation - simplywall.st,GoogleNews,0.4939
+2026-01-31 05:13:08+00:00,Decoding Apple Inc (AAPL): A Strategic SWOT Insight - GuruFocus,GoogleNews,0.0
+2026-01-31 08:10:40+00:00,Campbell Newman Asset Management Inc. Grows Stock Holdings in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.3612
+2026-01-31 08:12:38+00:00,Cortland Associates Inc. MO Cuts Stake in Apple Inc. $AAPL - MarketBeat,GoogleNews,-0.296
+2026-01-31 08:12:45+00:00,Orion Capital Management LLC Decreases Stake in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.0
+2026-01-31 08:14:43+00:00,Capital Investment Advisors LLC Boosts Position in Apple Inc. $AAPL - MarketBeat,GoogleNews,0.3182
+2026-01-31 08:36:44+00:00,Apple Inc. $AAPL is Oregon Public Employees Retirement Fund's 3rd Largest Position - MarketBeat,GoogleNews,0.0
+2026-01-31 12:11:34+00:00,(AAPL) Pivots Trading Plans and Risk Controls (AAPL:CA) - Stock Traders Daily,GoogleNews,-0.2732
+2026-01-31 13:10:51+00:00,Apple Inc. (NASDAQ:AAPL) Q1 2026 Earnings Call Transcript - Insider Monkey,GoogleNews,0.0
+2026-01-31 13:22:16+00:00,Apple Inc. (NASDAQ:AAPL) Q1 2026 earnings call transcript - MSN,GoogleNews,0.0
+2026-01-31 14:06:54+00:00,AAPL Stock Today: January 31 NFL Ties Scrutinized After Tisch Emails - Meyka,GoogleNews,0.0
+2026-01-31 14:58:20+00:00,Apple stock price: AAPL ended Friday at $259 — what investors watch before Monday - TechStock²,GoogleNews,0.0

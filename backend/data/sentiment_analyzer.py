@@ -16,10 +16,8 @@ import requests
 from bs4 import BeautifulSoup
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Tuple
-import re
+from typing import List, Dict, Optional
 from urllib.parse import quote
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod

@@ -4,36 +4,78 @@
 
 ```
 backend/
-├── api/                # FastAPI Backend
-│   └── app.py          # Entry point
-├── config.py           # Cấu hình toàn cục
+├── api/                        # FastAPI Backend (RESTful)
+│   ├── app.py                  # Application factory, route registration
+│   ├── routes/                 # API route handlers
+│   │   ├── __init__.py         # Router exports
+│   │   ├── root.py             # GET / (health check)
+│   │   ├── tickers.py          # /tickers endpoints
+│   │   ├── models.py           # /models endpoints
+│   │   └── predictions.py      # /predictions endpoints
+│   ├── schemas/                # Pydantic models for validation
+│   │   ├── __init__.py         # Schema exports
+│   │   ├── requests.py         # Request models (PredictRequest)
+│   │   └── responses.py        # Response models (PredictResponse, etc.)
+│   └── services/               # Business logic layer
+│       ├── __init__.py         # Service exports
+│       ├── market_service.py   # Trading calendar utilities
+│       └── prediction_service.py # Prediction algorithms
+├── config.py                   # Cấu hình toàn cục
 ├── data/
-│   ├── preprocessor.py # DataPreprocessor class
-│   └── sentiment_analyzer.py # SentimentAnalyzer class
+│   ├── preprocessor.py         # DataPreprocessor class
+│   └── sentiment_analyzer.py   # SentimentAnalyzer class
 ├── models/
-│   ├── base.py         # BaseModel (abstract)
-│   ├── deep_learning/  # LSTM, BiLSTM, RNN, ANN, LSTM-GRU
-│   ├── machine_learning/ # Random Forest, Decision Tree, Linear Regression
-│   └── time_series/    # ARIMA, SARIMA, Prophet, Exponential Smoothing
+│   ├── base.py                 # BaseModel (abstract)
+│   ├── deep_learning/          # LSTM, BiLSTM, RNN, ANN, LSTM-GRU
+│   ├── machine_learning/       # Random Forest, Decision Tree, Linear Regression
+│   └── time_series/            # ARIMA, SARIMA, Prophet, Exponential Smoothing
 └── training/
-    └── trainer.py      # ModelTrainer class
+    └── trainer.py              # ModelTrainer class
 
 frontend/
-└── app.py              # Streamlit UI
+├── app.py                      # Main Streamlit application entry point
+├── config.py                   # Configuration constants (API URL, colors)
+├── api_client.py               # API client for backend communication
+├── styles.py                   # CSS styles and HTML templates
+└── components/                 # Reusable UI components
+    ├── __init__.py             # Component exports
+    ├── charts.py               # Plotly chart components
+    └── metrics.py              # Metrics display components
 
 scripts/
-└── train_all.py        # Training script
+└── train_all.py                # Training script
 
 tests/
-├── unit/               # Unit tests
-└── integration/        # Integration tests
+├── unit/                       # Unit tests
+└── integration/                # Integration tests
 ```
 
 ---
 
 ## API Endpoints
 
-### `POST /predict`
+### RESTful Structure (New)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Health check, welcome message |
+| GET | `/tickers` | List available tickers |
+| GET | `/tickers/{ticker}/historical` | Get historical prices |
+| GET | `/tickers/{ticker}/latest` | Get latest price |
+| GET | `/models` | List available models |
+| GET | `/models/{ticker}/{model}/metrics` | Get model metrics |
+| POST | `/predictions` | Create new prediction |
+
+### Legacy Endpoints (Backward Compatible)
+
+| Method | Endpoint | Maps To |
+|--------|----------|---------|
+| GET | `/historical/{ticker}` | `/tickers/{ticker}/historical` |
+| GET | `/metrics/{ticker}/{model}` | `/models/{ticker}/{model}/metrics` |
+| GET | `/latest-price/{ticker}` | `/tickers/{ticker}/latest` |
+| POST | `/predict` | `/predictions` |
+
+### `POST /predictions`
 
 Dự đoán giá cổ phiếu.
 
@@ -61,6 +103,135 @@ Dự đoán giá cổ phiếu.
   "currency": "USD",
   "model_path": "..."
 }
+```
+
+### `GET /tickers/{ticker}/historical`
+
+Get historical price data.
+
+**Parameters:**
+- `ticker` (path): Stock symbol (e.g., "AAPL")
+- `days` (query, optional): Number of days (default: 60)
+
+**Response:**
+```json
+{
+  "ticker": "AAPL",
+  "data": [
+    {"date": "2025-01-30", "actual": 236.40},
+    {"date": "2025-01-29", "actual": 235.10},
+    ...
+  ]
+}
+```
+
+### `GET /tickers/{ticker}/latest`
+
+Get latest price data.
+
+**Response:**
+```json
+{
+  "ticker": "AAPL",
+  "date": "2025-01-30",
+  "close": 236.40,
+  "open": 234.50,
+  "high": 237.80,
+  "low": 233.90,
+  "volume": 45678900
+}
+```
+
+### `GET /models/{ticker}/{model}/metrics`
+
+Get evaluation metrics for a trained model.
+
+**Response:**
+```json
+{
+  "ticker": "AAPL",
+  "model": "LSTM",
+  "mse": 12.34,
+  "rmse": 3.51,
+  "mae": 2.89,
+  "mape": 1.23,
+  "r2": 0.95
+}
+```
+
+---
+
+## API Module (`backend/api/`)
+
+### Application Factory
+
+```python
+from backend.api import app, create_app
+
+# Default app instance
+app  # FastAPI application
+
+# Or create new instance
+my_app = create_app()
+```
+
+### Schemas
+
+```python
+from backend.api.schemas import (
+    PredictRequest,
+    PredictResponse,
+    PredictionDay,
+    HistoricalResponse,
+    HistoricalDataPoint,
+    MetricsResponse,
+    LatestPriceResponse,
+    TickersResponse,
+    ModelsResponse,
+)
+
+# Request validation
+request = PredictRequest(ticker="AAPL", model="LSTM", horizon=7)
+
+# Response serialization
+response = PredictResponse(
+    ticker="AAPL",
+    model="LSTM",
+    last_actual_date="2025-01-30",
+    last_actual_price=236.40,
+    horizon=7,
+    predictions=[PredictionDay(day=1, date="2025-01-31", predicted_price=237.50)],
+    model_path="/path/to/model"
+)
+```
+
+### Services
+
+```python
+from backend.api.services import PredictionService, MarketService
+
+# Get trading days (excludes weekends and holidays)
+trading_days = MarketService.get_trading_days(
+    start_date=pd.Timestamp("2025-01-30"),
+    num_days=7,
+    ticker="AAPL"
+)
+
+# Multi-step prediction for ML models
+predictions = PredictionService.predict_multi_step_ml(
+    model_instance=model,
+    preprocessor=preprocessor,
+    num_steps=7
+)
+
+# Multi-step prediction for DL models (with drift correction)
+predictions = PredictionService.predict_multi_step_dl(
+    model=model.model,
+    preprocessor=preprocessor,
+    scaler=scaler,
+    num_steps=7,
+    time_step=60
+)
 ```
 
 ---
@@ -390,6 +561,96 @@ print(trainer.get_summary())
 3. **Inverse Transform**: Nhớ chuyển về giá gốc sau predict:
    ```python
    predictions = scaler.inverse_transform(predictions)
+   ```
+
+---
+
+## Frontend Module (`frontend/`)
+
+### API Client
+
+The `APIClient` class handles all communication with the backend API.
+
+```python
+from frontend.api_client import api_client
+
+# Get available tickers
+tickers = api_client.get_tickers()  # ['AAPL', 'AMZN', ...]
+
+# Get available models
+models = api_client.get_models()  # ['LSTM', 'Random Forest', ...]
+
+# Get historical data
+df = api_client.get_historical_data('AAPL', days=60)
+# DataFrame with columns: ['date', 'actual']
+
+# Get latest price
+latest = api_client.get_latest_price('AAPL')
+# {'ticker': 'AAPL', 'date': '2025-01-30', 'close': 236.40, ...}
+
+# Get model metrics
+metrics = api_client.get_metrics('AAPL', 'LSTM')
+# {'mse': 12.34, 'rmse': 3.51, 'mae': 2.89, 'mape': 1.23, 'r2': 0.95}
+
+# Generate prediction
+result = api_client.predict('AAPL', 'LSTM', horizon=7)
+# {'ticker': 'AAPL', 'predictions': [...], ...}
+```
+
+### Chart Components
+
+```python
+from frontend.components import (
+    create_historical_chart,
+    create_prediction_chart,
+)
+
+# Historical chart
+fig = create_historical_chart(historical_df, ticker='AAPL', days=90)
+st.plotly_chart(fig)
+
+# Prediction chart with historical + forecast
+fig = create_prediction_chart(historical_df, predictions, ticker='AAPL')
+st.plotly_chart(fig)
+```
+
+### Metrics Components
+
+```python
+from frontend.components import display_metrics_cards, display_price_card
+
+# Display metrics in styled cards
+display_metrics_cards(metrics)  # Shows MSE, RMSE, MAE, MAPE, R2
+
+# Display current price
+display_price_card(ticker='AAPL', date='2025-01-30', price=236.40)
+```
+
+### Configuration
+
+```python
+from frontend.config import (
+    API_URL,           # Backend API URL
+    HORIZON_OPTIONS,   # Prediction horizon choices
+    CHART_COLORS,      # Color palette for charts
+    REQUEST_TIMEOUT,   # API timeout in seconds
+)
+```
+
+### Styles
+
+```python
+from frontend.styles import get_custom_css, get_hero_html, get_footer_html
+
+# Apply custom CSS
+st.markdown(get_custom_css(), unsafe_allow_html=True)
+
+# Render hero section
+st.markdown(get_hero_html(), unsafe_allow_html=True)
+
+# Render footer
+st.markdown(get_footer_html(), unsafe_allow_html=True)
+```
    ```
 
 4. **Prophet Format**: Cần DataFrame với columns `ds` và `y`:
