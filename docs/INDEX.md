@@ -1,4 +1,4 @@
-# 📊 Stock Price Prediction Project
+# Stock Price Prediction Project
 
 ## Tổng Quan
 Dự án dự đoán giá cổ phiếu/crypto sử dụng nhiều mô hình Machine Learning và Deep Learning.
@@ -13,20 +13,36 @@ Hệ thống bao gồm Training Pipeline, FastAPI Backend, và Streamlit UI.
 - **DevOps**: Docker, GitHub Actions (CI/CD)
 - **MLOps**: DVC (Data Version Control), MLflow (Experiment Tracking)
 - **Auto-ML**: Optuna (Bayesian Optimization)
+- **Sentiment Analysis**: VADER, BeautifulSoup4 (FinViz news)
 
 ## Cấu Trúc Thư Mục
 
 ```
 Stock/
-├── src/                         # Source code chính
+├── backend/                     # Source code chính
 │   ├── api/                     # FastAPI Backend
-│   ├── ui/                      # Streamlit Frontend
+│   │   └── app.py
+│   ├── config.py                # Cấu hình toàn cục
 │   ├── data/                    # Data processing
+│   │   ├── preprocessor.py
+│   │   └── sentiment_analyzer.py
 │   ├── models/                  # Model definitions
+│   │   ├── base.py
+│   │   ├── deep_learning/       # LSTM, BiLSTM, RNN, ANN, LSTM-GRU
+│   │   ├── machine_learning/    # Random Forest, Decision Tree, Linear Regression
+│   │   └── time_series/         # ARIMA, SARIMA, Prophet, Exp Smoothing
 │   └── training/                # Training logic (with MLflow & Optuna)
+│       └── trainer.py
+│
+├── frontend/                    # Streamlit Frontend
+│   └── app.py
 │
 ├── scripts/                     # Scripts
 │   └── train_all.py             # Training CLI
+│
+├── tests/                       # Test suite
+│   ├── unit/
+│   └── integration/
 │
 ├── Data/                        # CSV Data (Tracked by DVC)
 ├── Models/                      # Trained Models (Tracked by DVC)
@@ -42,14 +58,14 @@ Stock/
 
 | Model                       | Type              | Library      | Support Tuning |
 |-----------------------------|-------------------|--------------|:--------------:|
-| LSTM, BiLSTM, LSTM-GRU      | Deep Learning     | tensorflow   |       ✅       |
-| RNN, ANN                    | Deep Learning     | tensorflow   |       ✅       |
-| ARIMA, SARIMA               | Time Series       | statsmodels  |       ❌       |
-| Prophet                     | Time Series       | prophet      |       ❌       |
-| Exponential Smoothing       | Time Series       | statsmodels  |       ❌       |
-| Random Forest               | ML                | scikit-learn |       ✅       |
-| Decision Tree               | ML                | scikit-learn |       ✅       |
-| Multiple Linear Regression  | ML                | scikit-learn |       ❌       |
+| LSTM, BiLSTM, LSTM-GRU      | Deep Learning     | tensorflow   |      Yes       |
+| RNN, ANN                    | Deep Learning     | tensorflow   |      Yes       |
+| ARIMA, SARIMA               | Time Series       | statsmodels  |       No       |
+| Prophet                     | Time Series       | prophet      |       No       |
+| Exponential Smoothing       | Time Series       | statsmodels  |       No       |
+| Random Forest               | ML                | scikit-learn |      Yes       |
+| Decision Tree               | ML                | scikit-learn |      Yes       |
+| Multiple Linear Regression  | ML                | scikit-learn |       No       |
 
 ## Commands
 
@@ -59,7 +75,7 @@ uv sync
 uv run dvc pull  # Pull data/models from remote if configured
 ```
 
-### Hyperparameter Tuning (NEW)
+### Hyperparameter Tuning
 ```bash
 # Tune và Train model với Optuna (20 trials)
 uv run python scripts/train_all.py -t AAPL -m LSTM --tune --trials 20
@@ -68,7 +84,7 @@ uv run python scripts/train_all.py -t AAPL -m LSTM --tune --trials 20
 uv run python scripts/train_all.py -t AAPL -m "Random Forest" --tune --trials 5
 ```
 
-### Training (Standard)
+### Training
 ```bash
 # Train ML và DL models cho AAPL và MSFT
 uv run python scripts/train_all.py --ml-only --dl-only --tickers AAPL,MSFT
@@ -85,10 +101,10 @@ uv run mlflow ui
 ### Run App
 ```bash
 # API (Backend)
-uv run python src/api/app.py
+uv run uvicorn backend.api.app:app --reload
 
 # UI (Frontend)
-uv run streamlit run src/ui/app.py
+uv run streamlit run frontend/app.py
 ```
 
 ### Docker
@@ -107,7 +123,8 @@ User -> Streamlit UI -> FastAPI -> ModelTrainer -> BaseModel -> [Specific Model]
 ```
 
 ## Features
-- **Multi-Horizon Forecast**: Dự đoán giá cho 1, 3, 7, 30 ngày tiếp theo.
+- **Multi-Horizon Forecast**: Dự đoán giá cho 1, 3, 7, 14, 30, 60 ngày tiếp theo.
+- **Sentiment Analysis**: Tích hợp tin tức từ FinViz và Google News để tính điểm sentiment.
 - **Unified Interface**: Tất cả models đều có method `predict_next(horizon)`.
 - **Auto-Update**: API tự động load model mới nhất.
 

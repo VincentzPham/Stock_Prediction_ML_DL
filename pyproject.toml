@@ -23,4 +23,8 @@ dependencies = [
     "tensorflow>=2.16.0",
     "uvicorn>=0.40.0",
     "yfinance>=1.0",
+    "beautifulsoup4>=4.12.3",
+    "nltk>=3.9.1",
+    "ruff>=0.9.3",
+    "black>=24.10.0",
 ]

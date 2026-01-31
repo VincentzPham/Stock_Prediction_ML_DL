@@ -6,175 +6,147 @@ Script tự động train tất cả models cho tất cả tickers.
 Usage:
     # Train tất cả
     uv run python scripts/train_all.py
-    
+
     # Train một ticker cụ thể
     uv run python scripts/train_all.py --ticker AAPL
-    
-    # Train một model cụ thể  
+
+    # Train một model cụ thể
     uv run python scripts/train_all.py --model LSTM
-    
+
     # Train một ticker với một model
     uv run python scripts/train_all.py --ticker AAPL --model LSTM
-    
+
     # Train nhiều tickers và models
     uv run python scripts/train_all.py --tickers AAPL,MSFT,NVDA --models LSTM,ARIMA
-    
+
     # Skip models bị lỗi
     uv run python scripts/train_all.py --skip-errors
-    
+
     # Chỉ train ML models (nhanh hơn)
     uv run python scripts/train_all.py --ml-only
-    
+
     # Chỉ train Deep Learning models
     uv run python scripts/train_all.py --dl-only
 """
 
-import sys
 import argparse
 from pathlib import Path
 from datetime import datetime
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-
-from config import TICKERS, MODEL_NAMES
-from data.downloader import DataDownloader
-from training.trainer import (
-    ModelTrainer, 
+from backend.config import TICKERS
+from backend.training.trainer import (
+    ModelTrainer,
     MODEL_REGISTRY,
     DEEP_LEARNING_MODELS,
     TIME_SERIES_MODELS,
-    ML_MODELS
+    ML_MODELS,
 )
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Train stock prediction models',
+        description="Train stock prediction models",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
-    )
-    
-    parser.add_argument(
-        '--ticker', '-t',
-        type=str,
-        help='Single ticker to train (e.g., AAPL)'
-    )
-    
-    parser.add_argument(
-        '--tickers',
-        type=str,
-        help='Comma-separated list of tickers (e.g., AAPL,MSFT,NVDA)'
-    )
-    
-    parser.add_argument(
-        '--model', '-m',
-        type=str,
-        help='Single model to train (e.g., LSTM)'
-    )
-    
-    parser.add_argument(
-        '--models',
-        type=str,
-        help='Comma-separated list of models (e.g., LSTM,ARIMA)'
-    )
-    
-    parser.add_argument(
-        '--skip-errors',
-        action='store_true',
-        help='Skip models that fail and continue with others'
-    )
-    
-    parser.add_argument(
-        '-y', '--yes',
-        action='store_true',
-        help='Skip confirmation prompt (for CI/CD)'
+        epilog=__doc__,
     )
 
     parser.add_argument(
-        '--no-update-data',
-        action='store_true',
-        help='Do not download latest CSV data before training'
+        "--ticker", "-t", type=str, help="Single ticker to train (e.g., AAPL)"
     )
-    
+
     parser.add_argument(
-        '--ml-only',
-        action='store_true',
-        help='Train only ML models (Random Forest, Decision Tree, Linear Regression)'
+        "--tickers",
+        type=str,
+        help="Comma-separated list of tickers (e.g., AAPL,MSFT,NVDA)",
+    )
+
+    parser.add_argument(
+        "--model", "-m", type=str, help="Single model to train (e.g., LSTM)"
+    )
+
+    parser.add_argument(
+        "--models", type=str, help="Comma-separated list of models (e.g., LSTM,ARIMA)"
+    )
+
+    parser.add_argument(
+        "--skip-errors",
+        action="store_true",
+        help="Skip models that fail and continue with others",
+    )
+
+    parser.add_argument(
+        "-y", "--yes", action="store_true", help="Skip confirmation prompt (for CI/CD)"
+    )
+
+    parser.add_argument(
+        "--no-update-data",
+        action="store_true",
+        help="Do not download latest CSV data before training",
+    )
+
+    parser.add_argument(
+        "--ml-only",
+        action="store_true",
+        help="Train only ML models (Random Forest, Decision Tree, Linear Regression)",
     )
 
     # Backward/typo-compatible aliases (hide from --help)
     parser.add_argument(
-        '--ml--only',
-        dest='ml_only',
-        action='store_true',
-        help=argparse.SUPPRESS
+        "--ml--only", dest="ml_only", action="store_true", help=argparse.SUPPRESS
     )
-    
+
     parser.add_argument(
-        '--dl-only',
-        action='store_true',
-        help='Train only Deep Learning models (LSTM, RNN, etc.)'
+        "--dl-only",
+        action="store_true",
+        help="Train only Deep Learning models (LSTM, RNN, etc.)",
     )
 
     # Common typo: extra dash in flag name
     parser.add_argument(
-        '--dl--only',
-        dest='dl_only',
-        action='store_true',
-        help=argparse.SUPPRESS
-    )
-    
-    parser.add_argument(
-        '--ts-only',
-        action='store_true',
-        help='Train only Time Series models (ARIMA, Prophet, etc.)'
+        "--dl--only", dest="dl_only", action="store_true", help=argparse.SUPPRESS
     )
 
     parser.add_argument(
-        '--ts--only',
-        dest='ts_only',
-        action='store_true',
-        help=argparse.SUPPRESS
+        "--ts-only",
+        action="store_true",
+        help="Train only Time Series models (ARIMA, Prophet, etc.)",
     )
-    
+
     parser.add_argument(
-        '--no-save',
-        action='store_true',
-        help='Do not save models and results'
+        "--ts--only", dest="ts_only", action="store_true", help=argparse.SUPPRESS
     )
-    
+
     parser.add_argument(
-        '--list-models',
-        action='store_true',
-        help='List all available models'
+        "--no-save", action="store_true", help="Do not save models and results"
     )
-    
+
     parser.add_argument(
-        '--list-tickers',
-        action='store_true',
-        help='List all available tickers'
+        "--list-models", action="store_true", help="List all available models"
     )
-    
+
     parser.add_argument(
-        '--tune',
-        action='store_true',
-        help='Run hyperparameter tuning using Optuna before training'
+        "--list-tickers", action="store_true", help="List all available tickers"
     )
-    
+
     parser.add_argument(
-        '--trials',
+        "--tune",
+        action="store_true",
+        help="Run hyperparameter tuning using Optuna before training",
+    )
+
+    parser.add_argument(
+        "--trials",
         type=int,
         default=20,
-        help='Number of Optuna trials for tuning (default: 20)'
+        help="Number of Optuna trials for tuning (default: 20)",
     )
-    
+
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
-    
+
     # List commands
     if args.list_models:
         print("\nAvailable models:")
@@ -189,35 +161,35 @@ def main():
         for m in ML_MODELS:
             print(f"  - {m}")
         return
-    
+
     if args.list_tickers:
         print("\nAvailable tickers:")
         print("-" * 40)
         for t in TICKERS:
             print(f"  - {t}")
         return
-    
+
     # Determine tickers
     if args.ticker:
         tickers = [args.ticker.upper()]
     elif args.tickers:
-        tickers = [t.strip().upper() for t in args.tickers.split(',')]
+        tickers = [t.strip().upper() for t in args.tickers.split(",")]
     else:
         tickers = TICKERS
-    
+
     # Validate tickers
     for t in tickers:
         if t not in TICKERS:
             print(f"Warning: {t} not in default tickers list. Will try anyway.")
-    
+
     # Determine models
     if args.model:
         models = {args.model}
     elif args.models:
-        models = set(m.strip() for m in args.models.split(','))
+        models = set(m.strip() for m in args.models.split(","))
     else:
         models = set()
-    
+
     # Add models based on flags
     if args.ml_only:
         models.update(ML_MODELS)
@@ -225,21 +197,21 @@ def main():
         models.update(DEEP_LEARNING_MODELS)
     if args.ts_only:
         models.update(TIME_SERIES_MODELS)
-    
+
     # If no models selected yet, include all (default behavior)
     if not models and not (args.ml_only or args.dl_only or args.ts_only):
         models = set(MODEL_REGISTRY.keys())
-    
+
     # Convert back to sorted list
     models = sorted(list(models))
-    
+
     # Validate models
     for m in models:
         if m not in MODEL_REGISTRY:
             print(f"Error: Unknown model '{m}'")
             print(f"Available: {list(MODEL_REGISTRY.keys())}")
             return
-    
+
     # Print summary
     print("\n" + "=" * 60)
     print("STOCK PREDICTION MODEL TRAINING")
@@ -251,14 +223,14 @@ def main():
     print(f"Update data first: {not args.no_update_data}")
     print(f"Save results: {not args.no_save}")
     print("=" * 60)
-    
+
     # Confirm
     if len(tickers) * len(models) > 5 and not args.yes:
         response = input("\nProceed? [y/N]: ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             print("Aborted.")
             return
-    
+
     # Train
     start_time = datetime.now()
 
@@ -267,66 +239,56 @@ def main():
         print("\nUpdating latest data from yfinance...")
         downloader = DataDownloader()
         downloader.download_all(tickers=tickers, save=True)
-    
+
     trainer = ModelTrainer(verbose=True)
-    
+
     # Common arguments
     train_kwargs = {
-        'save_model': not args.no_save,
-        'save_results': not args.no_save,
-        'tune': args.tune,
-        'n_trials': args.trials,
-        'skip_on_error': args.skip_errors
+        "save_model": not args.no_save,
+        "save_results": not args.no_save,
+        "tune": args.tune,
+        "n_trials": args.trials,
+        "skip_on_error": args.skip_errors,
     }
-    
+
     if len(tickers) == 1 and len(models) == 1:
         # Single training
         result = trainer.train_single(
-            ticker=tickers[0],
-            model_name=models[0],
-            **train_kwargs
+            ticker=tickers[0], model_name=models[0], **train_kwargs
         )
     elif len(tickers) == 1:
         # All models for one ticker
         results = trainer.train_all_models(
-            ticker=tickers[0],
-            models=models,
-            **train_kwargs
+            ticker=tickers[0], models=models, **train_kwargs
         )
     elif len(models) == 1:
         # One model for all tickers
         results = trainer.train_all_tickers(
-            model_name=models[0],
-            tickers=tickers,
-            **train_kwargs
+            model_name=models[0], tickers=tickers, **train_kwargs
         )
     else:
         # All combinations
-        results = trainer.train_all(
-            tickers=tickers,
-            models=models,
-            **train_kwargs
-        )
-    
+        results = trainer.train_all(tickers=tickers, models=models, **train_kwargs)
+
     # Summary
     end_time = datetime.now()
     duration = end_time - start_time
-    
+
     print("\n" + "=" * 60)
     print("TRAINING COMPLETED")
     print("=" * 60)
     print(f"Duration: {duration}")
-    
+
     summary = trainer.get_summary()
     if not summary.empty:
-        print(f"\nResults:")
+        print("\nResults:")
         print(summary.to_string(index=False))
-        
+
         # Stats
-        success = (summary['status'] == 'success').sum()
-        failed = (summary['status'] == 'failed').sum()
+        success = (summary["status"] == "success").sum()
+        failed = (summary["status"] == "failed").sum()
         print(f"\nSuccess: {success}, Failed: {failed}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

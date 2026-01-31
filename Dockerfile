@@ -1,5 +1,6 @@
 # ==============================================================================
 # Stock Prediction API - Dockerfile
+# Updated for new backend/ structure
 # ==============================================================================
 FROM python:3.12-slim
 
@@ -16,13 +17,13 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Copy project files
 COPY pyproject.toml uv.lock ./
-COPY src/ ./src/
+COPY backend/ ./backend/
 
 # Install dependencies
 RUN uv sync --frozen --no-dev
 
 # Create directories for volumes
-RUN mkdir -p Data Models Result
+RUN mkdir -p data models Result
 
 # Expose port
 EXPOSE 8000
@@ -32,4 +33,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
 
 # Run the application
-CMD ["uv", "run", "uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "backend.api.app:app", "--host", "0.0.0.0", "--port", "8000"]

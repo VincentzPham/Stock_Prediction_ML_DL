@@ -1,22 +1,32 @@
-# 📚 Functions & API Reference
+# Functions and API Reference
 
 ## Cấu Trúc Source Code
 
 ```
-src/
+backend/
 ├── api/                # FastAPI Backend
-│   └── app.py          # Entry point
-├── ui/                 # Streamlit Frontend
 │   └── app.py          # Entry point
 ├── config.py           # Cấu hình toàn cục
 ├── data/
 │   ├── preprocessor.py # DataPreprocessor class
-│   └── downloader.py   # DataDownloader class
+│   └── sentiment_analyzer.py # SentimentAnalyzer class
 ├── models/
 │   ├── base.py         # BaseModel (abstract)
-│   └── *.py            # Các model implementations
+│   ├── deep_learning/  # LSTM, BiLSTM, RNN, ANN, LSTM-GRU
+│   ├── machine_learning/ # Random Forest, Decision Tree, Linear Regression
+│   └── time_series/    # ARIMA, SARIMA, Prophet, Exponential Smoothing
 └── training/
     └── trainer.py      # ModelTrainer class
+
+frontend/
+└── app.py              # Streamlit UI
+
+scripts/
+└── train_all.py        # Training script
+
+tests/
+├── unit/               # Unit tests
+└── integration/        # Integration tests
 ```
 
 ---
@@ -32,7 +42,7 @@ Dự đoán giá cổ phiếu.
 {
   "ticker": "AAPL",
   "model": "Random Forest",
-  "horizon": 1
+  "horizon": 7
 }
 ```
 
@@ -41,9 +51,13 @@ Dự đoán giá cổ phiếu.
 {
   "ticker": "AAPL",
   "model": "Random Forest",
-  "date": "2023-12-31",
-  "horizon": 1,
-  "prediction": 150.5,
+  "last_actual_date": "2025-01-30",
+  "last_actual_price": 236.40,
+  "horizon": 7,
+  "predictions": [
+    {"day": 1, "date": "2025-01-31", "predicted_price": 237.50},
+    ...
+  ],
   "currency": "USD",
   "model_path": "..."
 }
@@ -51,33 +65,11 @@ Dự đoán giá cổ phiếu.
 
 ---
 
-## Models Module (`src/models/`)
-
-### BaseModel
-
-```python
-class BaseModel(ABC):
-    # ... existing methods ...
-    
-    @abstractmethod
-    def predict_next(self, preprocessor, horizon: int = 1) -> float:
-        """
-        Dự đoán giá trị tương lai (horizon days ahead).
-        """
-        pass
-```
-
-### Implementations
-
-Tất cả models (LSTM, ARIMA, Random Forest,...) đều implement `predict_next` để hỗ trợ unified interface cho API.
-
----
-
-## Config Module (`src/config.py`)
+## Config Module (`backend/config.py`)
 
 ### Constants
 ```python
-from src.config import (
+from backend.config import (
     ROOT_DIR,           # Path đến thư mục gốc
     DATA_DIR,           # Path đến Data/
     MODELS_DIR,         # Path đến Models/
@@ -119,12 +111,12 @@ get_data_path(ticker) -> Path               # Data/{ticker}.csv
 
 ---
 
-## Data Module (`src/data/`)
+## Data Module (`backend/data/`)
 
 ### DataPreprocessor
 
 ```python
-from src.data import DataPreprocessor
+from backend.data import DataPreprocessor
 
 # Khởi tạo
 preprocessor = DataPreprocessor(ticker='AAPL')
@@ -145,22 +137,21 @@ original = preprocessor.inverse_transform(scaled_data)
 info = preprocessor.get_info()             # Dict với metadata
 ```
 
-### DataDownloader
+### SentimentAnalyzer
 
 ```python
-from src.data import DataDownloader
+from backend.data import SentimentAnalyzer
 
-downloader = DataDownloader(save_dir=DATA_DIR)
+analyzer = SentimentAnalyzer()
 
-# Download
-df = downloader.download(ticker='AAPL', start_date=None, end_date=None, save=True)
-results = downloader.download_all(tickers=TICKERS, save=True)
-df = downloader.update_data(ticker='AAPL')  # Cập nhật data mới
+# Phân tích
+daily_sentiment = analyzer.get_daily_sentiment(ticker='AAPL')
+# Trả về DataFrame với index là Date và cột Sentiment_Score
 ```
 
 ---
 
-## Models Module (`src/models/`)
+## Models Module (`backend/models/`)
 
 ### BaseModel (Abstract)
 
@@ -181,16 +172,16 @@ class BaseModel(ABC):
     def save_model(self, filename=None) -> Path
     def load_model(self, filepath) -> None
     def save_results(self, dates, actuals, predictions) -> Path
-    def save_metrics(self) -> Path
+    def save_metrics() -> Path
     def plot_predictions(self, dates, actuals, predictions, save=True) -> Path
     def plot_residuals(self, actuals, predictions, save=True) -> Path
-    def summary(self) -> Dict
+    def summary() -> Dict
 ```
 
 ### Deep Learning Models
 
 ```python
-from src.models import LSTMModel, BiLSTMModel, LSTMGRUModel, RNNModel, ANNModel
+from backend.models import LSTMModel, BiLSTMModel, LSTMGRUModel, RNNModel, ANNModel
 
 model = LSTMModel(ticker='AAPL')
 model.build(input_shape=(60, 1), units=[50, 50], dropout=0.2)
@@ -202,7 +193,7 @@ model.plot_training_history(save=True)
 ### Time Series Models
 
 ```python
-from src.models import ARIMAModel, SARIMAModel, ProphetModel, ExponentialSmoothingModel
+from backend.models import ARIMAModel, SARIMAModel, ProphetModel, ExponentialSmoothingModel
 
 # ARIMA
 model = ARIMAModel(ticker='AAPL')
@@ -226,7 +217,7 @@ model.plot_components()
 ### ML Models
 
 ```python
-from src.models import RandomForestModel, DecisionTreeModel, LinearRegressionModel
+from backend.models import RandomForestModel, DecisionTreeModel, LinearRegressionModel
 
 # Random Forest
 model = RandomForestModel(ticker='AAPL')
@@ -243,12 +234,12 @@ equation = model.get_equation(feature_names)
 
 ---
 
-## Training Module (`src/training/`)
+## Training Module (`backend/training/`)
 
 ### ModelTrainer
 
 ```python
-from src.training import ModelTrainer
+from backend.training import ModelTrainer
 
 trainer = ModelTrainer(verbose=True)
 
@@ -288,7 +279,7 @@ summary_df = trainer.get_summary()
 ### Model Registry
 
 ```python
-from src.training.trainer import MODEL_REGISTRY, DEEP_LEARNING_MODELS, TIME_SERIES_MODELS, ML_MODELS
+from backend.training.trainer import MODEL_REGISTRY, DEEP_LEARNING_MODELS, TIME_SERIES_MODELS, ML_MODELS
 
 MODEL_REGISTRY = {
     'LSTM': LSTMModel,
@@ -300,44 +291,6 @@ DEEP_LEARNING_MODELS = ['LSTM', 'BiLSTM', 'LSTM-GRU', 'RNN', 'ANN']
 TIME_SERIES_MODELS = ['ARIMA', 'SARIMA', 'Prophet', 'Exponential Smoothing']
 ML_MODELS = ['Random Forest', 'Decision Tree', 'Multiple Linear Regression']
 ```
-
----
-
-## Hyperparameter Tuning (`src/training/tuner.py`)
-
-Module hỗ trợ tự động tối ưu hóa tham số mô hình sử dụng **Optuna**.
-
-### HyperparameterTuner
-
-Class chính để quản lý việc tuning.
-
-```python
-from training.tuner import HyperparameterTuner
-from training.trainer import MODEL_REGISTRY
-
-# Khởi tạo
-tuner = HyperparameterTuner(ticker='AAPL', n_trials=20)
-
-# Optimize (Trả về dictionary chứa best params)
-best_params = tuner.optimize(
-    model_name='LSTM', 
-    preprocessor=preprocessor, 
-    model_registry=MODEL_REGISTRY
-)
-```
-
-### Search Spaces
-Search spaces được cấu hình trong `src/config.py`:
-- **Deep Learning (LSTM/RNN/ANN)**:
-  - `units`: 32 - 128
-  - `layers`: 1 - 3
-  - `dropout`: 0.1 - 0.5
-  - `learning_rate`: 1e-4 - 1e-2 (log scale)
-- **Machine Learning**:
-  - `Random Forest`: `n_estimators` (50-300), `max_depth` (5-50)
-  - `Decision Tree`: `max_depth` (5-50)
-
-*Note: ARIMA/SARIMA/Prophet không hỗ trợ tuning tự động, sử dụng cấu hình thủ công.*
 
 ---
 
@@ -356,39 +309,9 @@ uv run python scripts/train_all.py -t AAPL -m "Random Forest"
 uv run python scripts/train_all.py --tickers AAPL,MSFT --models LSTM,ARIMA
 
 # Train theo loại
-# Train ML và DL models cho 2 mã (Combine flags)
-uv run python scripts/train_all.py --ml-only --dl-only --tickers AAPL,MSFT
-
-# Hyperparameter Tuning
-uv run python scripts/train_all.py -t AAPL -m LSTM --tune --trials 20
-
-# Train theo loại (có thể combine)
 uv run python scripts/train_all.py --ml-only      # Chỉ ML models
 uv run python scripts/train_all.py --dl-only      # Chỉ Deep Learning
 uv run python scripts/train_all.py --ts-only      # Chỉ Time Series
-
-# List available
-uv run python scripts/train_all.py --list-models
-uv run python scripts/train_all.py --list-tickers
-```
-
----
-
-## MLOps Integration
-
-### MLflow Tracking
-Code training tự động tích hợp MLflow:
-- **Experiment**: `Stock_Prediction_{ticker}`
-- **Run Name**: `{model}_{timestamp}`
-- **Logged Params**: `model_name`, `ticker`, `config` (epochs, units, etc.)
-- **Logged Metrics**: `MSE`, `RMSE`, `MAE`, `MAPE`, `R2`
-- **Artifacts**: Prediction plots, Model files
-
-### DVC
-Sử dụng DVC để track Data và Models:
-- `Data/` folder
-- `Models/` folder
-- Sử dụng `dvc add` khi có changes.
 
 # List available
 uv run python scripts/train_all.py --list-models
@@ -402,8 +325,8 @@ uv run python scripts/train_all.py --list-tickers
 ### 1. Full Training Pipeline
 
 ```python
-from src.data import DataPreprocessor
-from src.models import LSTMModel
+from backend.data import DataPreprocessor
+from backend.models import LSTMModel
 
 # Load data
 prep = DataPreprocessor('AAPL')
@@ -436,7 +359,7 @@ model.plot_predictions(prep.get_dates('test'), actuals, predictions)
 ### 2. Quick ML Training
 
 ```python
-from src.training import ModelTrainer
+from backend.training import ModelTrainer
 
 trainer = ModelTrainer()
 
@@ -454,30 +377,22 @@ print(trainer.get_summary())
 
 ## Error-Prone Areas (Lưu ý)
 
-1. **TensorFlow + Python 3.13**: Chưa tương thích tốt. Dùng `--ml-only` hoặc `--ts-only`.
-
-2. **CSV Reading**: File từ yfinance cần `skiprows=2`:
-   ```python
-   df = pd.read_csv(path, skiprows=2)
-   df.columns = ['Date', 'Close', 'High', 'Low', 'Open', 'Volume']
-   ```
-
-3. **Time Series Split**: KHÔNG shuffle:
+1. **Time Series Split**: KHÔNG shuffle:
    ```python
    train_test_split(X, y, test_size=0.2, shuffle=False)
    ```
 
-4. **LSTM Input Shape**: `(samples, time_steps, features)`:
+2. **LSTM Input Shape**: `(samples, time_steps, features)`:
    ```python
    X = X.reshape(X.shape[0], X.shape[1], 1)
    ```
 
-5. **Inverse Transform**: Nhớ chuyển về giá gốc sau predict:
+3. **Inverse Transform**: Nhớ chuyển về giá gốc sau predict:
    ```python
    predictions = scaler.inverse_transform(predictions)
    ```
 
-6. **Prophet Format**: Cần DataFrame với columns `ds` và `y`:
+4. **Prophet Format**: Cần DataFrame với columns `ds` và `y`:
    ```python
    df = pd.DataFrame({'ds': dates, 'y': values})
    ```

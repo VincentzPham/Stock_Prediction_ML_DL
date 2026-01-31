@@ -24,10 +24,7 @@ help:
 	@echo "  make train-ml      - Train ML models only (fast)"
 	@echo "  make train-dl      - Train Deep Learning models"
 	@echo "  make train-ts      - Train Time Series models"
-	@echo "  make train-quick   - Quick test training"
-	@echo ""
-	@echo "Data:"
-	@echo "  make download-data - Download latest stock data"
+	@echo "  make train-aapl    - Train all models for AAPL"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-build  - Build Docker images"
@@ -37,7 +34,7 @@ help:
 	@echo "  make docker-restart- Restart all services"
 	@echo ""
 	@echo "Testing & Quality:"
-	@echo "  make test          - Run quick tests"
+	@echo "  make test          - Run pytest tests"
 	@echo "  make lint          - Run linter (ruff)"
 	@echo "  make format        - Format code (ruff)"
 	@echo ""
@@ -61,10 +58,10 @@ dev:
 # ==============================================================================
 
 run-api:
-	uv run python src/api/app.py
+	uv run uvicorn backend.api.app:app --reload --host 0.0.0.0 --port 8000
 
 run-ui:
-	uv run streamlit run src/ui/app.py --server.port 8501
+	uv run streamlit run frontend/app.py --server.port 8501
 
 run:
 	@echo "Starting API and UI..."
@@ -80,27 +77,22 @@ train:
 	uv run python scripts/train_all.py
 
 train-ml:
-	uv run python scripts/train_all.py --ml-only -y
+	uv run python scripts/train_all.py --ml-only
 
 train-dl:
-	uv run python scripts/train_all.py --dl-only -y
+	uv run python scripts/train_all.py --dl-only
 
 train-ts:
-	uv run python scripts/train_all.py --ts-only -y
+	uv run python scripts/train_all.py --ts-only
 
-train-quick:
-	uv run python scripts/test_quick.py
+train-aapl:
+	uv run python scripts/train_all.py -t AAPL
 
-train-ticker:
-	@read -p "Enter ticker (e.g., AAPL): " ticker; \
-	uv run python scripts/train_all.py --ticker $$ticker -y
+train-lstm:
+	uv run python scripts/train_all.py -m LSTM
 
-# ==============================================================================
-# Data
-# ==============================================================================
-
-download-data:
-	uv run python -c "from src.data.downloader import DataDownloader; DataDownloader().download_all()"
+train-tune:
+	uv run python scripts/train_all.py -t AAPL -m LSTM --tune --trials 20
 
 # ==============================================================================
 # Docker
@@ -132,13 +124,13 @@ docker-shell-ui:
 # ==============================================================================
 
 test:
-	uv run python scripts/test_quick.py
+	uv run pytest tests/ -v
 
 lint:
-	uv run ruff check src/ scripts/
+	uv run ruff check backend/ frontend/ scripts/
 
 format:
-	uv run ruff format src/ scripts/
+	uv run ruff format backend/ frontend/ scripts/
 
 # ==============================================================================
 # Cleanup
@@ -168,8 +160,7 @@ clean-models:
 # ==============================================================================
 
 ci-test:
-	uv run python scripts/train_all.py --ml-only --no-save -y
-	uv run python scripts/train_all.py --ts-only --no-save -y
+	uv run pytest tests/ -v --tb=short
 
 ci-lint:
-	uv run ruff check src/ scripts/ --exit-zero
+	uv run ruff check backend/ frontend/ scripts/ --exit-zero
