@@ -2,26 +2,18 @@
 Stock Price Prediction - Streamlit Frontend.
 
 Main application entry point for the Streamlit UI.
+This serves as the home page for the multi-page application.
 """
 
 import streamlit as st
-import pandas as pd
 
-from frontend.config import HORIZON_OPTIONS, DEFAULT_HISTORICAL_DAYS, DEFAULT_HORIZON_INDEX
-from frontend.api_client import api_client
-from frontend.styles import get_custom_css, get_hero_html, get_footer_html
-from frontend.components import (
-    create_historical_chart,
-    create_prediction_chart,
-    display_metrics_cards,
-    display_price_card,
-)
+from frontend.styles import get_custom_css
 
 
 def configure_page() -> None:
     """Configure Streamlit page settings."""
     st.set_page_config(
-        page_title="Stock Prediction",
+        page_title="Stock Prediction Platform",
         page_icon="📈",
         layout="wide",
         initial_sidebar_state="expanded",
@@ -29,204 +21,206 @@ def configure_page() -> None:
     st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 
-def render_sidebar() -> tuple[str, str, int]:
-    """
-    Render sidebar controls.
+def render_home():
+    """Render the home page content."""
+    # Hero section
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, rgba(15, 118, 110, 0.15), rgba(197, 139, 42, 0.15));
+        border-radius: 24px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e6dfd6;
+        text-align: center;
+    ">
+        <h1 style="
+            font-size: 3rem;
+            margin: 0;
+            color: #1b2430;
+            font-weight: 700;
+        ">📈 Stock Price Prediction</h1>
+        <p style="
+            font-size: 1.2rem;
+            color: #5f6b7a;
+            margin: 1rem 0 1.5rem 0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        ">
+            Professional forecasting platform using Machine Learning and Deep Learning models.
+            Analyze market trends and generate multi-day price predictions.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <span style="
+                background: rgba(15, 118, 110, 0.12);
+                color: #0f766e;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+            ">12 ML/DL Models</span>
+            <span style="
+                background: rgba(197, 139, 42, 0.12);
+                color: #c58b2a;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+            ">11 Stock Tickers</span>
+            <span style="
+                background: rgba(15, 118, 110, 0.12);
+                color: #0f766e;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+            ">Real-time Predictions</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    Returns:
-        Tuple of (selected_ticker, selected_model, horizon_days).
-    """
-    with st.sidebar:
-        st.markdown("## ⚙️ Configuration")
-        st.caption("Select prediction parameters")
-        
-        # Get available options from API
-        tickers = api_client.get_tickers()
-        models = api_client.get_models()
-        
-        # Fallback if API unavailable
-        if not tickers:
-            tickers = ["AAPL", "AMZN", "GOOG", "META", "MSFT", "NVDA", "TSLA"]
-        if not models:
-            models = [
-                "LSTM", "BiLSTM", "LSTM-GRU", "RNN", "ANN",
-                "Random Forest", "Decision Tree", "Multiple Linear Regression",
-                "ARIMA", "SARIMA", "Prophet", "Exponential Smoothing"
-            ]
-        
-        # Ticker selection
-        selected_ticker = st.selectbox(
-            "Stock Ticker",
-            options=tickers,
-            help="Select the stock ticker to predict."
-        )
-        
-        # Model selection
-        selected_model = st.selectbox(
-            "Prediction Model",
-            options=models,
-            help="Select the ML/DL model for prediction."
-        )
-        
-        # Horizon selection
-        horizon_label = st.selectbox(
-            "Prediction Horizon",
-            options=list(HORIZON_OPTIONS.keys()),
-            index=DEFAULT_HORIZON_INDEX,
-            help="Number of days to predict into the future."
-        )
-        horizon_days = HORIZON_OPTIONS[horizon_label]
-        
-        st.markdown("---")
-        
-        # Predict button
-        predict_clicked = st.button("🚀 Generate Prediction", use_container_width=True)
-        
-        if predict_clicked:
-            st.session_state["run_prediction"] = True
-        
-        st.markdown("---")
-        st.caption("💡 Predictions are generated using trained models.")
+    # Navigation cards
+    st.markdown("## 🚀 Get Started")
     
-    return selected_ticker, selected_model, horizon_days
-
-
-def render_current_price(ticker: str) -> None:
-    """
-    Render current price card.
+    col1, col2, col3 = st.columns(3)
     
-    Args:
-        ticker: Stock ticker symbol.
-    """
-    latest = api_client.get_latest_price(ticker)
-    if latest:
-        display_price_card(
-            ticker=ticker,
-            date=latest.get("date", "N/A"),
-            price=latest.get("close", 0.0)
-        )
-
-
-def render_metrics(ticker: str, model: str) -> None:
-    """
-    Render model metrics section.
+    with col1:
+        st.markdown("""
+        <div style="
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e6dfd6;
+            height: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        ">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #1b2430;">Dashboard</h3>
+            <p style="color: #5f6b7a; font-size: 0.9rem; margin: 0;">
+                Market overview, model leaderboard, and training coverage statistics.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Open Dashboard", key="btn_dashboard", use_container_width=True):
+            st.switch_page("pages/1_Dashboard.py")
     
-    Args:
-        ticker: Stock ticker symbol.
-        model: Model name.
-    """
-    st.markdown("### 📊 Model Performance Metrics")
-    metrics = api_client.get_metrics(ticker, model)
-    display_metrics_cards(metrics)
-
-
-def render_prediction(ticker: str, model: str, horizon: int) -> None:
-    """
-    Run prediction and display results.
+    with col2:
+        st.markdown("""
+        <div style="
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e6dfd6;
+            height: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        ">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📈</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #1b2430;">Model Comparison</h3>
+            <p style="color: #5f6b7a; font-size: 0.9rem; margin: 0;">
+                Compare all trained models for a ticker and find the best performer.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Compare Models", key="btn_compare", use_container_width=True):
+            st.switch_page("pages/2_Model_Comparison.py")
     
-    Args:
-        ticker: Stock ticker symbol.
-        model: Model name.
-        horizon: Number of days to predict.
-    """
-    st.markdown("### 🔮 Price Prediction")
+    with col3:
+        st.markdown("""
+        <div style="
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e6dfd6;
+            height: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        ">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔮</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #1b2430;">Predictions</h3>
+            <p style="color: #5f6b7a; font-size: 0.9rem; margin: 0;">
+                Generate stock price predictions using trained ML/DL models.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Make Predictions", key="btn_predict", use_container_width=True):
+            st.switch_page("pages/3_Predictions.py")
     
-    try:
-        with st.spinner(f"Generating {horizon}-day prediction using {model}..."):
-            result = api_client.predict(ticker, model, horizon)
-        
-        if result and result.get("predictions"):
-            predictions = result["predictions"]
-            
-            # Display chart
-            historical_df = api_client.get_historical_data(ticker, DEFAULT_HISTORICAL_DAYS)
-            fig = create_prediction_chart(historical_df, predictions, ticker)
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Display prediction table
-            st.markdown("#### Predicted Prices")
-            pred_df = pd.DataFrame(predictions)
-            pred_df.columns = ["Date", "Predicted Price ($)"]
-            pred_df["Predicted Price ($)"] = pred_df["Predicted Price ($)"].apply(
-                lambda x: f"${x:,.2f}"
-            )
-            st.dataframe(pred_df, use_container_width=True, hide_index=True)
-            
-            # Summary stats
-            prices = [p["predicted_price"] for p in predictions]
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("First Day", f"${prices[0]:,.2f}")
-            with col2:
-                st.metric("Last Day", f"${prices[-1]:,.2f}")
-            with col3:
-                change = ((prices[-1] - prices[0]) / prices[0]) * 100
-                st.metric(
-                    "Change",
-                    f"${prices[-1] - prices[0]:,.2f}",
-                    f"{change:+.2f}%"
-                )
-            
-            st.success(
-                f"✅ Successfully generated {len(predictions)}-day prediction for {ticker}"
-            )
-        else:
-            st.warning("No predictions returned. Please try again.")
-            
-    except Exception as e:
-        st.error(f"❌ Prediction failed: {str(e)}")
-        st.info("Please ensure the API server is running and the model is trained.")
-
-
-def render_historical_chart(ticker: str) -> None:
-    """
-    Render historical price chart.
+    st.markdown("---")
     
-    Args:
-        ticker: Stock ticker symbol.
-    """
-    st.markdown("### 📈 Historical Price Data")
+    # Model information
+    st.markdown("## 🤖 Available Models")
     
-    historical_df = api_client.get_historical_data(ticker, 90)
+    col1, col2, col3 = st.columns(3)
     
-    if not historical_df.empty:
-        fig = create_historical_chart(historical_df, ticker, 90)
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.info("No historical data available for this ticker.")
+    with col1:
+        st.markdown("""
+        **Deep Learning**
+        - LSTM (Long Short-Term Memory)
+        - BiLSTM (Bidirectional LSTM)
+        - LSTM-GRU Hybrid
+        - RNN (Recurrent Neural Network)
+        - ANN (Artificial Neural Network)
+        """)
+    
+    with col2:
+        st.markdown("""
+        **Time Series**
+        - ARIMA
+        - SARIMA
+        - Prophet
+        - Exponential Smoothing
+        """)
+    
+    with col3:
+        st.markdown("""
+        **Machine Learning**
+        - Random Forest
+        - Decision Tree
+        - Multiple Linear Regression
+        """)
+    
+    st.markdown("---")
+    
+    # Tickers
+    st.markdown("## 💹 Supported Tickers")
+    
+    tickers = [
+        "AAPL", "AMZN", "AVGO", "BTC-USD", "GOOG",
+        "META", "MSFT", "NVDA", "SAP", "TSLA", "TSM"
+    ]
+    
+    cols = st.columns(len(tickers))
+    for i, ticker in enumerate(tickers):
+        with cols[i]:
+            st.markdown(f"""
+            <div style="
+                background: white;
+                border-radius: 8px;
+                padding: 0.5rem;
+                text-align: center;
+                border: 1px solid #e6dfd6;
+                font-weight: 600;
+                color: #1b2430;
+            ">{ticker}</div>
+            """, unsafe_allow_html=True)
+    
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center; padding: 1rem 0; color: #64748b;">
+        <p style="margin: 0;">
+            <strong>Stock Price Prediction Platform</strong> | Built with FastAPI + Streamlit
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem; color: #94a3b8;">
+            Powered by TensorFlow, scikit-learn, and statsmodels
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 def main() -> None:
     """Main application entry point."""
     configure_page()
-    
-    # Hero section
-    st.markdown(get_hero_html(), unsafe_allow_html=True)
-    
-    # Sidebar configuration
-    ticker, model, horizon = render_sidebar()
-    
-    # Main content area
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        render_current_price(ticker)
-    
-    with col2:
-        render_metrics(ticker, model)
-    
-    st.markdown("---")
-    
-    # Prediction section
-    if st.session_state.get("run_prediction"):
-        render_prediction(ticker, model, horizon)
-        st.session_state["run_prediction"] = False
-    else:
-        render_historical_chart(ticker)
-    
-    # Footer
-    st.markdown("---")
-    st.markdown(get_footer_html(), unsafe_allow_html=True)
+    render_home()
 
 
 if __name__ == "__main__":

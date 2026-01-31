@@ -1,7 +1,7 @@
 """
 Chart Components Module.
 
-Provides functions for creating Plotly charts.
+Provides functions for creating Plotly charts with enhanced styling and interactivity.
 """
 
 import plotly.graph_objects as go
@@ -9,6 +9,87 @@ import pandas as pd
 from typing import List, Dict, Any
 
 from frontend.config import CHART_COLORS
+
+
+# Common chart configuration for consistent styling
+CHART_CONFIG = {
+    "displayModeBar": True,
+    "displaylogo": False,
+    "modeBarButtonsToRemove": ["lasso2d", "select2d"],
+    "toImageButtonOptions": {
+        "format": "png",
+        "filename": "chart",
+        "height": 600,
+        "width": 1000,
+        "scale": 2,
+    },
+}
+
+
+def _get_common_layout(title: str, height: int = 400) -> dict:
+    """
+    Get common layout configuration for charts.
+    
+    Args:
+        title: Chart title.
+        height: Chart height in pixels.
+        
+    Returns:
+        Dictionary with layout configuration.
+    """
+    return dict(
+        title=dict(
+            text=title,
+            font=dict(size=18, color=CHART_COLORS["text"], family="Space Grotesk"),
+            x=0,
+            xanchor="left",
+        ),
+        font=dict(family="Space Grotesk", color=CHART_COLORS["text"]),
+        hovermode="x unified",
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=13,
+            font_family="Space Grotesk",
+            bordercolor=CHART_COLORS["grid"],
+        ),
+        plot_bgcolor=CHART_COLORS["background"],
+        paper_bgcolor=CHART_COLORS["background"],
+        xaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor=CHART_COLORS["grid"],
+            showline=True,
+            linewidth=1,
+            linecolor=CHART_COLORS["grid"],
+            rangeslider=dict(visible=False),
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor=CHART_COLORS["grid"],
+            tickprefix="$",
+            showline=True,
+            linewidth=1,
+            linecolor=CHART_COLORS["grid"],
+        ),
+        margin=dict(l=60, r=40, t=60, b=50),
+        height=height,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="rgba(255,255,255,0.8)",
+            bordercolor=CHART_COLORS["grid"],
+            borderwidth=1,
+        ),
+        # Animation settings
+        transition=dict(
+            duration=500,
+            easing="cubic-in-out",
+        ),
+    )
 
 
 def create_historical_chart(
@@ -36,33 +117,30 @@ def create_historical_chart(
                 y=historical_df["actual"],
                 mode="lines",
                 name="Historical Price",
-                line=dict(color=CHART_COLORS["primary"], width=2),
+                line=dict(
+                    color=CHART_COLORS["primary"],
+                    width=2.5,
+                    shape="spline",  # Smooth curve
+                ),
                 fill="tozeroy",
-                fillcolor="rgba(15, 118, 110, 0.12)",
+                fillcolor="rgba(15, 118, 110, 0.08)",
+                hovertemplate="<b>%{x|%b %d, %Y}</b><br>Price: $%{y:,.2f}<extra></extra>",
             )
         )
     
-    fig.update_layout(
-        title=dict(
-            text=f"{ticker} Stock Price - Last {days} Days",
-            font=dict(size=18, color=CHART_COLORS["text"]),
-        ),
-        font=dict(family="Space Grotesk", color=CHART_COLORS["text"]),
-        xaxis_title="Date",
-        yaxis_title="Price (USD)",
-        hovermode="x unified",
-        plot_bgcolor=CHART_COLORS["background"],
-        paper_bgcolor=CHART_COLORS["background"],
-        xaxis=dict(showgrid=True, gridwidth=1, gridcolor=CHART_COLORS["grid"]),
-        yaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor=CHART_COLORS["grid"],
-            tickprefix="$"
-        ),
-        margin=dict(l=60, r=40, t=80, b=60),
-        height=400,
+    layout = _get_common_layout(f"{ticker} Stock Price - Last {days} Days", height=400)
+    layout["xaxis"]["title"] = "Date"
+    layout["yaxis"]["title"] = "Price (USD)"
+    
+    # Add range slider for zoom functionality
+    layout["xaxis"]["rangeslider"] = dict(
+        visible=True,
+        thickness=0.05,
+        bgcolor=CHART_COLORS["grid"],
     )
+    layout["height"] = 450  # Extra height for range slider
+    
+    fig.update_layout(**layout)
     
     return fig
 
@@ -92,9 +170,13 @@ def create_prediction_chart(
                 x=historical_df["date"],
                 y=historical_df["actual"],
                 mode="lines",
-                name="Historical Price",
-                line=dict(color=CHART_COLORS["primary"], width=2),
-                hovertemplate="Date: %{x}<br>Price: $%{y:.2f}<extra></extra>",
+                name="Historical",
+                line=dict(
+                    color=CHART_COLORS["primary"],
+                    width=2.5,
+                    shape="spline",
+                ),
+                hovertemplate="<b>%{x|%b %d, %Y}</b><br>Price: $%{y:,.2f}<extra></extra>",
             )
         )
     
@@ -115,11 +197,47 @@ def create_prediction_chart(
                     y=[last_hist_value, pred_values[0]],
                     mode="lines",
                     name="Transition",
-                    line=dict(color=CHART_COLORS["muted"], width=2, dash="dot"),
+                    line=dict(
+                        color=CHART_COLORS["muted"],
+                        width=2,
+                        dash="dot",
+                    ),
                     showlegend=False,
                     hoverinfo="skip",
                 )
             )
+        
+        # Prediction confidence band (visual only - simulated ±5%)
+        upper_band = [v * 1.05 for v in pred_values]
+        lower_band = [v * 0.95 for v in pred_values]
+        
+        # Upper bound (invisible, for fill)
+        fig.add_trace(
+            go.Scatter(
+                x=pred_dates,
+                y=upper_band,
+                mode="lines",
+                name="Upper Bound",
+                line=dict(width=0),
+                showlegend=False,
+                hoverinfo="skip",
+            )
+        )
+        
+        # Lower bound with fill
+        fig.add_trace(
+            go.Scatter(
+                x=pred_dates,
+                y=lower_band,
+                mode="lines",
+                name="Confidence Band",
+                line=dict(width=0),
+                fill="tonexty",
+                fillcolor="rgba(197, 139, 42, 0.15)",
+                showlegend=False,
+                hoverinfo="skip",
+            )
+        )
         
         # Predicted line
         fig.add_trace(
@@ -127,41 +245,38 @@ def create_prediction_chart(
                 x=pred_dates,
                 y=pred_values,
                 mode="lines+markers",
-                name="Predicted Price",
-                line=dict(color=CHART_COLORS["secondary"], width=2, dash="dash"),
-                marker=dict(size=8, color=CHART_COLORS["secondary"]),
-                hovertemplate="Date: %{x}<br>Predicted: $%{y:.2f}<extra></extra>",
+                name="Predicted",
+                line=dict(
+                    color=CHART_COLORS["secondary"],
+                    width=2.5,
+                    dash="dash",
+                    shape="spline",
+                ),
+                marker=dict(
+                    size=8,
+                    color=CHART_COLORS["secondary"],
+                    line=dict(width=2, color="white"),
+                ),
+                hovertemplate="<b>%{x|%b %d, %Y}</b><br>"
+                              "Predicted: $%{y:,.2f}<extra></extra>",
             )
         )
     
     # Layout
-    fig.update_layout(
-        title=dict(
-            text=f"{ticker} Stock Price - Historical & Predicted",
-            font=dict(size=18, color=CHART_COLORS["text"]),
-        ),
-        font=dict(family="Space Grotesk", color=CHART_COLORS["text"]),
-        xaxis_title="Date",
-        yaxis_title="Price (USD)",
-        hovermode="x unified",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        ),
-        plot_bgcolor=CHART_COLORS["background"],
-        paper_bgcolor=CHART_COLORS["background"],
-        xaxis=dict(showgrid=True, gridwidth=1, gridcolor=CHART_COLORS["grid"]),
-        yaxis=dict(
-            showgrid=True,
-            gridwidth=1,
-            gridcolor=CHART_COLORS["grid"],
-            tickprefix="$"
-        ),
-        margin=dict(l=60, r=40, t=80, b=60),
-        height=450,
-    )
+    layout = _get_common_layout(f"{ticker} - Historical & Predicted", height=480)
+    layout["xaxis"]["title"] = "Date"
+    layout["yaxis"]["title"] = "Price (USD)"
+    
+    fig.update_layout(**layout)
     
     return fig
+
+
+def get_chart_config() -> dict:
+    """
+    Get Plotly chart configuration for consistent interactivity.
+    
+    Returns:
+        Dictionary with chart config options.
+    """
+    return CHART_CONFIG

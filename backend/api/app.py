@@ -16,6 +16,8 @@ from backend.api.routes import (
     tickers_router,
     models_router,
     predictions_router,
+    comparison_router,
+    sentiment_router,
 )
 
 
@@ -74,6 +76,12 @@ def _register_routes(application: FastAPI) -> None:
     
     # Prediction routes (/predictions)
     application.include_router(predictions_router)
+    
+    # Comparison routes (/compare)
+    application.include_router(comparison_router)
+    
+    # Sentiment routes (/sentiment)
+    application.include_router(sentiment_router)
     
     # Legacy routes for backward compatibility
     _register_legacy_routes(application)

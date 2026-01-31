@@ -167,7 +167,108 @@ class APIClient:
             # Raise exception with error detail
             error_detail = response.json().get("detail", response.text)
             raise requests.exceptions.HTTPError(error_detail)
+    
+    def get_ticker_comparison(self, ticker: str) -> Dict[str, Any]:
+        """
+        Get comparison of all models for a specific ticker.
+        
+        Args:
+            ticker: Stock ticker symbol.
+            
+        Returns:
+            Dictionary with comparison data for all models.
+        """
+        try:
+            response = requests.get(
+                f"{self.base_url}/compare/{ticker}",
+                timeout=REQUEST_TIMEOUT
+            )
+            if response.status_code == 200:
+                return response.json()
+        except Exception:
+            pass
+        return {}
+    
+    def get_leaderboard(self) -> Dict[str, Any]:
+        """
+        Get global leaderboard data.
+        
+        Returns:
+            Dictionary with leaderboard and summary statistics.
+        """
+        try:
+            response = requests.get(
+                f"{self.base_url}/compare/leaderboard/all",
+                timeout=REQUEST_TIMEOUT
+            )
+            if response.status_code == 200:
+                return response.json()
+        except Exception:
+            pass
+        return {}
+    
+    def get_market_overview(self) -> List[Dict[str, Any]]:
+        """
+        Get market overview with latest prices.
+        
+        Returns:
+            List of ticker data with latest prices.
+        """
+        try:
+            response = requests.get(
+                f"{self.base_url}/compare/market/overview",
+                timeout=REQUEST_TIMEOUT
+            )
+            if response.status_code == 200:
+                return response.json()
+        except Exception:
+            pass
+        return []
 
 
 # Default client instance
 api_client = APIClient()
+
+
+# Sentiment API methods (added as module-level functions for easier caching)
+def get_sentiment_overview() -> List[Dict[str, Any]]:
+    """
+    Get sentiment overview for all tickers.
+    
+    Returns:
+        List of dictionaries with latest sentiment for each ticker.
+    """
+    try:
+        response = requests.get(
+            f"{api_client.base_url}/sentiment/overview",
+            timeout=REQUEST_TIMEOUT
+        )
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    return []
+
+
+def get_ticker_sentiment(ticker: str, days: int = 30) -> Dict[str, Any]:
+    """
+    Get daily sentiment data for a ticker.
+    
+    Args:
+        ticker: Stock ticker symbol.
+        days: Number of days to return.
+        
+    Returns:
+        Dictionary with sentiment data.
+    """
+    try:
+        response = requests.get(
+            f"{api_client.base_url}/sentiment/{ticker}/daily",
+            params={"days": days},
+            timeout=REQUEST_TIMEOUT
+        )
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    return {"available": False, "data": []}

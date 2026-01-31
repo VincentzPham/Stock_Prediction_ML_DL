@@ -342,8 +342,81 @@ def get_custom_css() -> str:
         to { opacity: 1; transform: translateY(0); }
     }
     
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
     .animate-in {
         animation: rise 0.6s ease-out forwards;
+    }
+    
+    .animate-fade {
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+    
+    .animate-slide {
+        animation: slideUp 0.5s ease-out forwards;
+    }
+    
+    .animate-scale {
+        animation: scaleIn 0.3s ease-out forwards;
+    }
+    
+    /* Staggered animation for cards/items */
+    .stagger-1 { animation-delay: 0.05s; }
+    .stagger-2 { animation-delay: 0.1s; }
+    .stagger-3 { animation-delay: 0.15s; }
+    .stagger-4 { animation-delay: 0.2s; }
+    .stagger-5 { animation-delay: 0.25s; }
+    .stagger-6 { animation-delay: 0.3s; }
+    
+    /* Loading skeleton animation */
+    .skeleton {
+        background: linear-gradient(
+            90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: var(--radius-md);
+    }
+    
+    /* Chart container animation */
+    .chart-container {
+        animation: scaleIn 0.4s ease-out forwards;
+    }
+    
+    /* Hover lift effect for interactive elements */
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    /* Smooth transitions for all interactive elements */
+    .transition-all {
+        transition: all 0.3s ease;
     }
     
     @media (max-width: 768px) {
@@ -361,6 +434,44 @@ def get_custom_css() -> str:
         
         .panel-value {
             font-size: 1.6rem;
+        }
+        
+        .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    /* Tablet breakpoint */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .main .block-container {
+            padding: 1.8rem 2rem;
+        }
+        
+        h1 {
+            font-size: 2.2rem !important;
+        }
+        
+        .metrics-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    /* Mobile small */
+    @media (max-width: 480px) {
+        .main .block-container {
+            padding: 0.8rem;
+        }
+        
+        h1 {
+            font-size: 1.6rem !important;
+        }
+        
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .panel {
+            padding: 1rem;
         }
     }
 </style>

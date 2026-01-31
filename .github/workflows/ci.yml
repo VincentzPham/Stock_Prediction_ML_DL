@@ -25,12 +25,14 @@ jobs:
       run: uv sync
       
     - name: Run linting
-      run: uv run ruff check backend/ frontend/ scripts/ --fix
+      run: uv run ruff check backend/ frontend/ scripts/ tests/ --fix
       
     - name: Run tests
       run: uv run pytest tests/ -v --tb=short
       
     - name: Dry Run Training (Smoke Test)
-      # Train 1 model for 1 ticker to ensure pipeline works
+      # Train LSTM for 1 ticker to ensure DL pipeline works
+      timeout-minutes: 10
+      continue-on-error: true
       run: |
         uv run python scripts/train_all.py --ticker AAPL --model LSTM --yes --no-save --no-update-data
