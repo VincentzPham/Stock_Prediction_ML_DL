@@ -6,12 +6,15 @@
 backend/
 ├── api/                        # FastAPI Backend (RESTful)
 │   ├── app.py                  # Application factory, route registration
+│   ├── cache.py                # Backend caching (TTLCache) [NEW]
 │   ├── routes/                 # API route handlers
 │   │   ├── __init__.py         # Router exports
 │   │   ├── root.py             # GET / (health check)
 │   │   ├── tickers.py          # /tickers endpoints
 │   │   ├── models.py           # /models endpoints
-│   │   └── predictions.py      # /predictions endpoints
+│   │   ├── predictions.py      # /predictions endpoints
+│   │   ├── comparison.py       # /compare endpoints [NEW]
+│   │   └── sentiment.py        # /sentiment endpoints [NEW]
 │   ├── schemas/                # Pydantic models for validation
 │   │   ├── __init__.py         # Schema exports
 │   │   ├── requests.py         # Request models (PredictRequest)
@@ -19,7 +22,8 @@ backend/
 │   └── services/               # Business logic layer
 │       ├── __init__.py         # Service exports
 │       ├── market_service.py   # Trading calendar utilities
-│       └── prediction_service.py # Prediction algorithms
+│       ├── prediction_service.py # Prediction algorithms
+│       └── comparison_service.py # Model comparison service [NEW]
 ├── config.py                   # Cấu hình toàn cục
 ├── data/
 │   ├── preprocessor.py         # DataPreprocessor class
@@ -33,14 +37,22 @@ backend/
     └── trainer.py              # ModelTrainer class
 
 frontend/
-├── app.py                      # Main Streamlit application entry point
+├── app.py                      # Main home page (multi-page navigation)
 ├── config.py                   # Configuration constants (API URL, colors)
 ├── api_client.py               # API client for backend communication
-├── styles.py                   # CSS styles and HTML templates
-└── components/                 # Reusable UI components
-    ├── __init__.py             # Component exports
-    ├── charts.py               # Plotly chart components
-    └── metrics.py              # Metrics display components
+├── styles.py                   # CSS styles (animations, responsive) [UPDATED]
+├── components/                 # Reusable UI components
+│   ├── __init__.py             # Component exports
+│   ├── charts.py               # Plotly chart components (enhanced) [UPDATED]
+│   └── metrics.py              # Metrics display components
+├── pages/                      # Multi-page app [NEW]
+│   ├── 1_Dashboard.py          # Market overview, leaderboard, sentiment
+│   ├── 2_Model_Comparison.py   # Compare models for a ticker
+│   └── 3_Predictions.py        # Generate price predictions
+└── utils/                      # Utility modules [NEW]
+    ├── __init__.py             # Utils exports
+    ├── cache.py                # Frontend caching (@st.cache_data)
+    └── export.py               # CSV/JSON export helpers
 
 scripts/
 └── train_all.py                # Training script
@@ -54,7 +66,7 @@ tests/
 
 ## API Endpoints
 
-### RESTful Structure (New)
+### RESTful Structure
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -65,6 +77,13 @@ tests/
 | GET | `/models` | List available models |
 | GET | `/models/{ticker}/{model}/metrics` | Get model metrics |
 | POST | `/predictions` | Create new prediction |
+| GET | `/compare/{ticker}` | Compare all models for a ticker |
+| GET | `/compare/leaderboard/all` | Global model leaderboard |
+| GET | `/compare/market/overview` | Market overview with prices |
+| GET | `/sentiment/available` | List tickers with sentiment data |
+| GET | `/sentiment/{ticker}/daily` | Get daily sentiment data |
+| GET | `/sentiment/{ticker}/latest` | Get latest sentiment |
+| GET | `/sentiment/overview` | Sentiment overview for all tickers |
 
 ### Legacy Endpoints (Backward Compatible)
 
